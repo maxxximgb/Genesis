@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Player</string>
+    <string name="app_name">Genesis</string>
     <string name="widget_title">Плейлист</string>
     <string name="permission_request_message">Для работы приложения нужны разрешения на доступ к аудио и уведомлениям.</string>
     <string name="permission_grant">Разрешить</string>

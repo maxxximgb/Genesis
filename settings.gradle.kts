@@ -14,5 +14,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "MorningPlayer"
+rootProject.name = "Genesis"
 include(":app")

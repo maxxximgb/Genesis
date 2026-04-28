@@ -26,7 +26,7 @@ android {
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.maximg.player"
+        applicationId = "com.maximg.genesis"
         minSdk = 35
         targetSdk = 35
         versionCode = 1

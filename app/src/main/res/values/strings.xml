@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Player</string>
+    <string name="app_name">Genesis</string>
     <string name="widget_title">Playlist</string>
     <string name="permission_request_message">This app needs audio and notification permissions to work.</string>
     <string name="permission_grant">Grant permissions</string>
