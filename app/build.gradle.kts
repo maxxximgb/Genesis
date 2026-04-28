@@ -132,6 +132,8 @@ dependencies {
     implementation("androidx.media3:media3-session:1.4.1")
     implementation("androidx.media3:media3-ui:1.4.1")
 
+    implementation("androidx.concurrent:concurrent-futures-ktx:1.2.0")
+
     implementation("androidx.glance:glance-appwidget:1.1.0")
     implementation("androidx.glance:glance-material3:1.1.0")
 
