@@ -11,6 +11,7 @@ import dev.maxxximgb.genesis.domain.model.SortOrder
 import dev.maxxximgb.genesis.domain.model.Track
 import dev.maxxximgb.genesis.domain.usecase.library.SearchLibraryUseCase
 import dev.maxxximgb.genesis.domain.usecase.playlist.AddTracksToPlaylistUseCase
+import dev.maxxximgb.genesis.domain.usecase.playlist.CreatePlaylistUseCase
 import dev.maxxximgb.genesis.domain.usecase.playlist.ObservePlaylistsUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -32,6 +33,7 @@ class LibraryViewModel @Inject constructor(
     private val searchLibrary: SearchLibraryUseCase,
     private val userPreferences: UserPreferencesStore,
     private val addTracksToPlaylist: AddTracksToPlaylistUseCase,
+    private val createPlaylistUseCase: CreatePlaylistUseCase,
     observePlaylists: ObservePlaylistsUseCase,
 ) : ViewModel() {
 
@@ -99,6 +101,8 @@ class LibraryViewModel @Inject constructor(
         clearSelection()
         return tracks.size
     }
+
+    suspend fun createPlaylist(name: String): Long = createPlaylistUseCase(name)
 
     private companion object {
         const val SEARCH_DEBOUNCE_MS = 300L

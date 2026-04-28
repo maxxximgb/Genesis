@@ -9,6 +9,9 @@ import dev.maxxximgb.genesis.data.preferences.UserPreferencesStore
 import dev.maxxximgb.genesis.domain.model.SortOrder
 import dev.maxxximgb.genesis.domain.model.Track
 import dev.maxxximgb.genesis.domain.usecase.library.SearchLibraryUseCase
+import dev.maxxximgb.genesis.domain.usecase.playlist.AddTracksToPlaylistUseCase
+import dev.maxxximgb.genesis.domain.usecase.playlist.CreatePlaylistUseCase
+import dev.maxxximgb.genesis.domain.usecase.playlist.ObservePlaylistsUseCase
 import dev.maxxximgb.genesis.util.MainDispatcherRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -52,8 +55,9 @@ class LibraryViewModelTest {
         val vm = LibraryViewModel(
             searchUseCase,
             prefs,
-            mock(),
-            mock {
+            mock<AddTracksToPlaylistUseCase>(),
+            mock<CreatePlaylistUseCase>(),
+            mock<ObservePlaylistsUseCase> {
                 on { invoke() } doReturn kotlinx.coroutines.flow.flowOf(emptyList())
             },
         )
@@ -84,8 +88,9 @@ class LibraryViewModelTest {
         val vm = LibraryViewModel(
             searchUseCase,
             prefs,
-            mock(),
-            mock {
+            mock<AddTracksToPlaylistUseCase>(),
+            mock<CreatePlaylistUseCase>(),
+            mock<ObservePlaylistsUseCase> {
                 on { invoke() } doReturn kotlinx.coroutines.flow.flowOf(emptyList())
             },
         )

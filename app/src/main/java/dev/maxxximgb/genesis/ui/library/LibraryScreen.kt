@@ -50,6 +50,7 @@ import dev.maxxximgb.genesis.ui.components.TrackRow
 import dev.maxxximgb.genesis.ui.library.components.AddToPlaylistSheet
 import dev.maxxximgb.genesis.ui.library.components.SortMenu
 import dev.maxxximgb.genesis.ui.nowPlaying.NowPlayingViewModel
+import dev.maxxximgb.genesis.ui.playlists.components.CreatePlaylistDialog
 import dev.maxxximgb.genesis.ui.settings.SettingsDialog
 import dev.maxxximgb.genesis.ui.theme.Spacing
 import kotlinx.coroutines.launch
@@ -71,6 +72,7 @@ fun LibraryScreen(
     var showSettings by remember { mutableStateOf(false) }
     var pendingAddTrack by remember { mutableStateOf<Track?>(null) }
     var showAddSheetForSelection by remember { mutableStateOf(false) }
+    var showCreatePlaylist by remember { mutableStateOf(false) }
 
     val isAddRouteMode = addToPlaylistId != null
     val tracksAddedFmt = stringResource(R.string.snack_tracks_added)
@@ -198,6 +200,7 @@ fun LibraryScreen(
                 }
                 pendingAddTrack = null
             },
+            onCreateNew = { showCreatePlaylist = true },
             onDismiss = { pendingAddTrack = null },
         )
     }
@@ -214,7 +217,38 @@ fun LibraryScreen(
                 }
                 showAddSheetForSelection = false
             },
+            onCreateNew = { showCreatePlaylist = true },
             onDismiss = { showAddSheetForSelection = false },
+        )
+    }
+
+    if (showCreatePlaylist) {
+        CreatePlaylistDialog(
+            onDismiss = { showCreatePlaylist = false },
+            onConfirm = { name ->
+                if (name.isNotBlank()) {
+                    val pending = pendingAddTrack
+                    val isSelectionFlow = showAddSheetForSelection
+                    scope.launch {
+                        val newId = libraryViewModel.createPlaylist(name)
+                        when {
+                            pending != null -> {
+                                libraryViewModel.addSingleToPlaylist(pending, newId)
+                                snackbarHostState.showSnackbar(trackAddedSingular)
+                            }
+                            isSelectionFlow -> {
+                                val added = libraryViewModel.addSelectedToPlaylist(newId)
+                                if (added > 0) {
+                                    snackbarHostState.showSnackbar(tracksAddedFmt.format(added))
+                                }
+                            }
+                        }
+                    }
+                }
+                showCreatePlaylist = false
+                pendingAddTrack = null
+                showAddSheetForSelection = false
+            },
         )
     }
 }

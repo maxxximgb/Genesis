@@ -1,5 +1,8 @@
 package dev.maxxximgb.genesis.ui.navigation
 
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.core.tween
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -12,6 +15,8 @@ import dev.maxxximgb.genesis.ui.library.LibraryScreen
 import dev.maxxximgb.genesis.ui.playlistDetail.PlaylistDetailScreen
 import dev.maxxximgb.genesis.ui.playlists.PlaylistsScreen
 
+private const val NAV_ANIM_DURATION_MS = 200
+
 @Composable
 fun AppNavHost(
     navController: NavHostController,
@@ -22,6 +27,10 @@ fun AppNavHost(
         navController = navController,
         startDestination = Routes.Library.pattern,
         modifier = modifier,
+        enterTransition = { fadeIn(animationSpec = tween(NAV_ANIM_DURATION_MS)) },
+        exitTransition = { fadeOut(animationSpec = tween(NAV_ANIM_DURATION_MS)) },
+        popEnterTransition = { fadeIn(animationSpec = tween(NAV_ANIM_DURATION_MS)) },
+        popExitTransition = { fadeOut(animationSpec = tween(NAV_ANIM_DURATION_MS)) },
     ) {
         composable(
             route = Routes.Library.pattern,

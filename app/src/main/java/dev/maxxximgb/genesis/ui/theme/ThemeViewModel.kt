@@ -13,6 +13,7 @@ import javax.inject.Inject
 data class ThemeState(
     val mode: ThemeMode = ThemeMode.DEFAULT,
     val palette: PaletteId = PaletteId.DEFAULT,
+    val fontScale: Float = UserPreferencesStore.DEFAULT_FONT_SCALE,
 )
 
 @HiltViewModel
@@ -23,7 +24,8 @@ class ThemeViewModel @Inject constructor(
     val themeState: StateFlow<ThemeState> = combine(
         preferences.observeThemeMode(),
         preferences.observePalette(),
-    ) { mode, palette -> ThemeState(mode, palette) }
+        preferences.observeFontScale(),
+    ) { mode, palette, scale -> ThemeState(mode, palette, scale) }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.Eagerly,

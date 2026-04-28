@@ -111,7 +111,16 @@ fun PlaylistDetailScreen(
         },
         bottomBar = {
             (state as? PlaylistDetailUiState.Content)?.takeIf { it.selectionMode }?.let { content ->
+                val tracks = content.detail.tracks
+                val selectedIndices = tracks.withIndex()
+                    .filter { it.value.mediaStoreId in content.selectedIds }
+                    .map { it.index }
+                val canMoveUp = selectedIndices.isNotEmpty() && selectedIndices.min() > 0
+                val canMoveDown = selectedIndices.isNotEmpty() &&
+                    selectedIndices.max() < tracks.lastIndex
                 SelectionActionBar(
+                    canMoveUp = canMoveUp,
+                    canMoveDown = canMoveDown,
                     onMoveUp = { viewModel.moveSelected(direction = -1) },
                     onMoveDown = { viewModel.moveSelected(direction = +1) },
                     onRemove = {
@@ -172,6 +181,8 @@ fun PlaylistDetailScreen(
 
 @Composable
 private fun SelectionActionBar(
+    canMoveUp: Boolean,
+    canMoveDown: Boolean,
     onMoveUp: () -> Unit,
     onMoveDown: () -> Unit,
     onRemove: () -> Unit,
@@ -183,10 +194,10 @@ private fun SelectionActionBar(
                 .padding(horizontal = Spacing.sm, vertical = Spacing.xs),
             horizontalArrangement = Arrangement.SpaceEvenly,
         ) {
-            IconButton(onClick = onMoveUp) {
+            IconButton(onClick = onMoveUp, enabled = canMoveUp) {
                 Icon(Icons.Filled.ArrowUpward, contentDescription = stringResource(R.string.move_up))
             }
-            IconButton(onClick = onMoveDown) {
+            IconButton(onClick = onMoveDown, enabled = canMoveDown) {
                 Icon(Icons.Filled.ArrowDownward, contentDescription = stringResource(R.string.move_down))
             }
             IconButton(onClick = onRemove) {

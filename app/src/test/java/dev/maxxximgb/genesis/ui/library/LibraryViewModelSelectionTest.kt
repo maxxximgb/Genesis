@@ -58,7 +58,7 @@ class LibraryViewModelSelectionTest {
         val observePlaylists = mock<ObservePlaylistsUseCase> {
             on { invoke() } doReturn flowOf(emptyList())
         }
-        return LibraryViewModel(search, prefs, addUc, observePlaylists)
+        return LibraryViewModel(search, prefs, addUc, mock(), observePlaylists)
     }
 
     private fun track(id: Long) = Track(
