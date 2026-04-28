@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
+import dev.maxxximgb.genesis.di.PlaybackPreferences
 import dev.maxxximgb.genesis.domain.model.PlaybackState
 import dev.maxxximgb.genesis.domain.model.RepeatMode
 import kotlinx.coroutines.flow.Flow
@@ -17,7 +18,7 @@ import javax.inject.Singleton
 
 @Singleton
 class PlaybackStateStore @Inject constructor(
-    private val dataStore: DataStore<Preferences>,
+    @PlaybackPreferences private val dataStore: DataStore<Preferences>,
 ) {
 
     val flow: Flow<PlaybackState> = dataStore.data

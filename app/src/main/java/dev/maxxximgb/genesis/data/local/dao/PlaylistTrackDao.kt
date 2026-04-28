@@ -32,6 +32,30 @@ abstract class PlaylistTrackDao {
     @Query("SELECT * FROM playlist_tracks WHERE playlistId = :playlistId ORDER BY position ASC")
     abstract fun observeForPlaylist(playlistId: Long): Flow<List<PlaylistTrackEntity>>
 
+    @Query(
+        """
+        SELECT t.* FROM tracks t
+        INNER JOIN playlist_tracks pt ON pt.mediaStoreId = t.mediaStoreId
+        WHERE pt.playlistId = :playlistId
+        ORDER BY pt.position ASC
+        """
+    )
+    abstract fun observeTracksForPlaylist(
+        playlistId: Long,
+    ): Flow<List<dev.maxxximgb.genesis.data.local.entity.TrackEntity>>
+
+    @Query(
+        """
+        SELECT t.* FROM tracks t
+        INNER JOIN playlist_tracks pt ON pt.mediaStoreId = t.mediaStoreId
+        WHERE pt.playlistId = :playlistId
+        ORDER BY pt.position ASC
+        """
+    )
+    abstract suspend fun getTracksForPlaylist(
+        playlistId: Long,
+    ): List<dev.maxxximgb.genesis.data.local.entity.TrackEntity>
+
     @Query("SELECT COUNT(*) FROM playlist_tracks WHERE playlistId = :playlistId")
     abstract suspend fun countForPlaylist(playlistId: Long): Int
 

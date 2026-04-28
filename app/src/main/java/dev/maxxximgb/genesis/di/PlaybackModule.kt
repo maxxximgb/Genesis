@@ -21,9 +21,18 @@ object PlaybackProvidersModule {
 
     @Provides
     @Singleton
+    @PlaybackPreferences
     fun providePlaybackDataStore(@ApplicationContext context: Context): DataStore<Preferences> =
         PreferenceDataStoreFactory.create(
             produceFile = { context.preferencesDataStoreFile("playback_state") },
+        )
+
+    @Provides
+    @Singleton
+    @UserPreferences
+    fun provideUserPreferencesDataStore(@ApplicationContext context: Context): DataStore<Preferences> =
+        PreferenceDataStoreFactory.create(
+            produceFile = { context.preferencesDataStoreFile("app_prefs") },
         )
 }
 

@@ -34,7 +34,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,27 +41,19 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import dagger.hilt.android.AndroidEntryPoint
 import dev.maxxximgb.genesis.domain.model.PlaybackState
-import dev.maxxximgb.genesis.domain.model.SortOrder
 import dev.maxxximgb.genesis.domain.model.Track
-import dev.maxxximgb.genesis.domain.playback.PlaybackController
-import dev.maxxximgb.genesis.domain.repository.MediaLibraryRepository
+import dev.maxxximgb.genesis.ui.library.LibraryViewModel
+import dev.maxxximgb.genesis.ui.nowPlaying.NowPlayingViewModel
 import dev.maxxximgb.genesis.ui.theme.GenesisTheme
-import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-
-    @Inject
-    lateinit var repository: MediaLibraryRepository
-
-    @Inject
-    lateinit var controller: PlaybackController
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,18 +61,18 @@ class MainActivity : ComponentActivity() {
         setContent {
             GenesisTheme {
                 // TEMP: replaced by LibraryScreen + PermissionGate + NowPlayingBar in 1.5
-                DebugLibraryRoute(repository, controller)
+                DebugLibraryRoute()
             }
         }
     }
 }
 
-// TEMP: 1.3 debug surface — entire composable removed in 1.5.
+// TEMP: 1.4 debug surface — entire composable removed in 1.5.
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun DebugLibraryRoute(
-    repository: MediaLibraryRepository,
-    controller: PlaybackController,
+    libraryViewModel: LibraryViewModel = hiltViewModel(),
+    nowPlayingViewModel: NowPlayingViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
     var permissionGranted by remember {
@@ -99,17 +90,17 @@ private fun DebugLibraryRoute(
         if (!permissionGranted) launcher.launch(Manifest.permission.READ_MEDIA_AUDIO)
     }
 
-    val playbackState by controller.state.collectAsState()
-    val scope = rememberCoroutineScope()
+    val playbackState by nowPlayingViewModel.uiState.collectAsState()
+    val items = libraryViewModel.pagedTracks.collectAsLazyPagingItems()
 
     Surface(modifier = Modifier.fillMaxSize()) {
         Scaffold(
-            topBar = { TopAppBar(title = { Text("Genesis · iter 1.3 (debug)") }) },
+            topBar = { TopAppBar(title = { Text("Genesis · iter 1.4 (debug)") }) },
             bottomBar = {
                 if (playbackState.title != null) {
                     DebugNowPlayingBar(
                         state = playbackState,
-                        onTogglePlayPause = { scope.launch { controller.togglePlayPause() } },
+                        onTogglePlayPause = nowPlayingViewModel::togglePlayPause,
                     )
                 }
             },
@@ -127,11 +118,9 @@ private fun DebugLibraryRoute(
                     )
                     return@Column
                 }
-                val pager = remember { repository.pagedLibrary(SortOrder.DATE_ADDED_DESC, "") }
-                val items = pager.flow.collectAsLazyPagingItems()
                 DebugTrackList(
                     items = items,
-                    onClick = { track -> scope.launch { controller.playSingle(track) } },
+                    onClick = { track -> nowPlayingViewModel.playSingle(track) },
                 )
             }
         }
