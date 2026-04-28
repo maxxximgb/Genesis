@@ -49,7 +49,14 @@ class LibraryViewModelTest {
         val searchUseCase = mock<SearchLibraryUseCase> {
             on { invoke(any(), any()) } doReturn pager
         }
-        val vm = LibraryViewModel(searchUseCase, prefs)
+        val vm = LibraryViewModel(
+            searchUseCase,
+            prefs,
+            mock(),
+            mock {
+                on { invoke() } doReturn kotlinx.coroutines.flow.flowOf(emptyList())
+            },
+        )
 
         vm.uiState.test {
             assertEquals(LibraryUiState("", SortOrder.DATE_ADDED_DESC), awaitItem())
@@ -74,7 +81,14 @@ class LibraryViewModelTest {
         val searchUseCase = mock<SearchLibraryUseCase> {
             on { invoke(any(), any()) } doReturn pager
         }
-        val vm = LibraryViewModel(searchUseCase, prefs)
+        val vm = LibraryViewModel(
+            searchUseCase,
+            prefs,
+            mock(),
+            mock {
+                on { invoke() } doReturn kotlinx.coroutines.flow.flowOf(emptyList())
+            },
+        )
 
         vm.onSortChange(SortOrder.ARTIST_ASC)
 

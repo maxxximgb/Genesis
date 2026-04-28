@@ -28,6 +28,17 @@ class PlaylistRepositoryImpl @Inject constructor(
     override fun observePlaylists(): Flow<List<Playlist>> =
         playlistDao.observeAll().map { rows -> rows.map { it.toDomain() } }
 
+    override fun observePlaylistsWithCounts():
+        Flow<List<dev.maxxximgb.genesis.domain.model.PlaylistSummary>> =
+        playlistDao.observeAllWithCounts().map { rows ->
+            rows.map { row ->
+                dev.maxxximgb.genesis.domain.model.PlaylistSummary(
+                    playlist = row.playlist.toDomain(),
+                    trackCount = row.trackCount,
+                )
+            }
+        }
+
     override fun observePlaylist(id: Long): Flow<Playlist?> =
         playlistDao.observeAll()
             .map { rows -> rows.firstOrNull { it.id == id }?.toDomain() }

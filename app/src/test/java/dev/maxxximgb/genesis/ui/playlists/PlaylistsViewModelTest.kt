@@ -2,9 +2,10 @@ package dev.maxxximgb.genesis.ui.playlists
 
 import app.cash.turbine.test
 import dev.maxxximgb.genesis.domain.model.Playlist
+import dev.maxxximgb.genesis.domain.model.PlaylistSummary
 import dev.maxxximgb.genesis.domain.usecase.playlist.CreatePlaylistUseCase
 import dev.maxxximgb.genesis.domain.usecase.playlist.DeletePlaylistUseCase
-import dev.maxxximgb.genesis.domain.usecase.playlist.ObservePlaylistsUseCase
+import dev.maxxximgb.genesis.domain.usecase.playlist.ObservePlaylistSummariesUseCase
 import dev.maxxximgb.genesis.domain.usecase.playlist.RenamePlaylistUseCase
 import dev.maxxximgb.genesis.util.MainDispatcherRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -26,14 +27,14 @@ class PlaylistsViewModelTest {
     val mainRule = MainDispatcherRule()
 
     private val sample = listOf(
-        Playlist(id = 1L, name = "First", createdAt = 1L),
-        Playlist(id = 2L, name = "Second", createdAt = 2L),
+        PlaylistSummary(Playlist(id = 1L, name = "First", createdAt = 1L), trackCount = 3),
+        PlaylistSummary(Playlist(id = 2L, name = "Second", createdAt = 2L), trackCount = 0),
     )
 
     @Test
-    fun emitsContentWhenObserveEmits() = runTest {
-        val flow = MutableStateFlow<List<Playlist>>(emptyList())
-        val observe = mock<ObservePlaylistsUseCase> { on { invoke() } doReturn flow }
+    fun emitsContentWhenSummariesArrive() = runTest {
+        val flow = MutableStateFlow<List<PlaylistSummary>>(emptyList())
+        val observe = mock<ObservePlaylistSummariesUseCase> { on { invoke() } doReturn flow }
         val vm = PlaylistsViewModel(
             observe,
             mock<CreatePlaylistUseCase>(),
@@ -42,12 +43,8 @@ class PlaylistsViewModelTest {
         )
 
         vm.uiState.test {
-            // With UnconfinedTestDispatcher the initial Loading value may
-            // collapse with the first upstream emission. Accept either.
             val first = awaitItem()
-            assertTrue(
-                first is PlaylistsUiState.Loading || first == PlaylistsUiState.Content(emptyList()),
-            )
+            assertTrue(first is PlaylistsUiState.Loading || first == PlaylistsUiState.Content(emptyList()))
             if (first is PlaylistsUiState.Loading) {
                 assertEquals(PlaylistsUiState.Content(emptyList()), awaitItem())
             }
@@ -61,7 +58,7 @@ class PlaylistsViewModelTest {
 
     @Test
     fun createDelegatesToUseCase() = runTest {
-        val observe = mock<ObservePlaylistsUseCase> {
+        val observe = mock<ObservePlaylistSummariesUseCase> {
             on { invoke() } doReturn MutableStateFlow(emptyList())
         }
         val create = mock<CreatePlaylistUseCase>()
@@ -76,7 +73,7 @@ class PlaylistsViewModelTest {
 
     @Test
     fun renameDelegatesToUseCase() = runTest {
-        val observe = mock<ObservePlaylistsUseCase> {
+        val observe = mock<ObservePlaylistSummariesUseCase> {
             on { invoke() } doReturn MutableStateFlow(emptyList())
         }
         val rename = mock<RenamePlaylistUseCase>()
@@ -91,7 +88,7 @@ class PlaylistsViewModelTest {
 
     @Test
     fun deleteDelegatesToUseCase() = runTest {
-        val observe = mock<ObservePlaylistsUseCase> {
+        val observe = mock<ObservePlaylistSummariesUseCase> {
             on { invoke() } doReturn MutableStateFlow(emptyList())
         }
         val delete = mock<DeletePlaylistUseCase>()

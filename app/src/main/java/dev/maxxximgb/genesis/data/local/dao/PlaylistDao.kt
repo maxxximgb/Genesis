@@ -21,6 +21,16 @@ interface PlaylistDao {
     @Query("SELECT * FROM playlists ORDER BY createdAt DESC")
     fun observeAll(): Flow<List<PlaylistEntity>>
 
+    @Query(
+        """
+        SELECT p.*,
+               COALESCE((SELECT COUNT(*) FROM playlist_tracks WHERE playlistId = p.id), 0) AS trackCount
+        FROM playlists p
+        ORDER BY p.createdAt DESC
+        """
+    )
+    fun observeAllWithCounts(): Flow<List<PlaylistWithTrackCount>>
+
     @Query("SELECT * FROM playlists WHERE id = :id")
     suspend fun findById(id: Long): PlaylistEntity?
 }

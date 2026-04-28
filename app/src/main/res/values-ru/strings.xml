@@ -1,61 +1,107 @@
 <resources>
     <string name="app_name">Genesis</string>
-    <string name="widget_title">Плейлист</string>
-    <string name="permission_request_message">Для работы приложения нужны разрешения на доступ к аудио и уведомлениям.</string>
-    <string name="permission_grant">Разрешить</string>
+
+    <!-- Library / Playlists screens -->
+    <string name="tab_library">Библиотека</string>
+    <string name="tab_playlists">Плейлисты</string>
     <string name="library_title">Библиотека</string>
-    <string name="library_subtitle">Треков: %1$d</string>
     <string name="playlists_title">Плейлисты</string>
-    <string name="playlists_subtitle">Плейлистов: %1$d</string>
-    <string name="playlist_title_default">Плейлист</string>
-    <string name="playlist_detail_subtitle">%1$d треков - %2$s</string>
     <string name="search_placeholder">Поиск по названию или артисту</string>
-    <string name="library_empty_title">Пока нет треков</string>
-    <string name="library_empty_subtitle">Добавьте музыку на устройство, и она появится здесь.</string>
-    <string name="library_empty_search_title">Ничего не найдено</string>
-    <string name="library_empty_search_subtitle">Попробуйте изменить запрос.</string>
-    <string name="playlists_empty_title">Плейлистов пока нет</string>
-    <string name="playlists_empty_subtitle">Создайте первый плейлист кнопкой внизу.</string>
-    <string name="playlist_empty_title">Плейлист пуст</string>
-    <string name="playlist_empty_subtitle">Добавьте треки из экрана Библиотека.</string>
-    <string name="open_playlist_hint">Откройте, чтобы управлять треками</string>
     <string name="add_to_playlist">Добавить в плейлист</string>
     <string name="add">Добавить</string>
+    <string name="add_n_tracks">Добавить треков: %1$d</string>
     <string name="add_tracks">Добавить треки</string>
-    <string name="create_playlist_first">Сначала создайте плейлист.</string>
-    <string name="close">Закрыть</string>
-    <string name="new_playlist">Новый плейлист</string>
-    <string name="rename_playlist">Переименовать плейлист</string>
-    <string name="save">Сохранить</string>
     <string name="cancel">Отмена</string>
+    <string name="close">Закрыть</string>
+    <string name="confirm">Подтвердить</string>
+    <string name="delete">Удалить</string>
+    <string name="rename">Переименовать</string>
+    <string name="save">Сохранить</string>
     <string name="play">Воспроизвести</string>
     <string name="pause">Пауза</string>
     <string name="next">Следующий</string>
-    <string name="prev">Предыдущий</string>
-    <string name="shuffle">Перемешать</string>
-    <string name="shuffle_on">Перемешивание вкл.</string>
-    <string name="repeat">Повтор</string>
-    <string name="repeat_one">Повтор 1</string>
-    <string name="repeat_all">Повтор всех</string>
-    <string name="drag">Перетащить</string>
-    <string name="unknown">Неизвестно</string>
-    <string name="not_playing">Не воспроизводится</string>
-    <string name="nothing_playing">Ничего не играет</string>
-    <string name="select_playlist">Выберите плейлист</string>
-    <string name="select_playlist_for_widget">Выберите плейлист для виджета</string>
-    <string name="widget_config_subtitle">Выберите один плейлист. Виджет будет открывать и управлять им.</string>
-    <string name="widget_config_select_action">Использовать этот плейлист</string>
-    <string name="widget_config_empty_title">Нет доступных плейлистов</string>
-    <string name="widget_no_playlists">Плейлистов пока нет. Создайте их в приложении.</string>
-    <string name="rename">Переименовать</string>
-    <string name="delete">Удалить</string>
-    <string name="play_pause">Воспроизведение/пауза</string>
     <string name="previous">Предыдущий</string>
-    <string name="selected_tracks_count">Выбрано: %1$d</string>
     <string name="settings">Настройки</string>
-    <string name="ui_size">Размер интерфейса</string>
-    <string name="ui_size_small">Маленький (85%)</string>
-    <string name="ui_size_normal">Обычный (100%)</string>
-    <string name="ui_size_large">Большой (115%)</string>
-    <string name="ui_size_xlarge">Очень большой (130%)</string>
+    <string name="back">Назад</string>
+    <string name="more">Ещё</string>
+
+    <!-- Selection -->
+    <string name="selected_count">Выбрано: %1$d</string>
+    <string name="move_up">Вверх</string>
+    <string name="move_down">Вниз</string>
+    <string name="remove_from_playlist">Убрать</string>
+
+    <!-- Empty / loading / error -->
+    <string name="empty_library_title">Пока нет треков</string>
+    <string name="empty_library_subtitle">Добавьте музыку на устройство, и она появится здесь.</string>
+    <string name="empty_search_title">Ничего не найдено</string>
+    <string name="empty_search_subtitle">Попробуйте изменить запрос.</string>
+    <string name="empty_playlists_title">Плейлистов пока нет</string>
+    <string name="empty_playlists_subtitle">Создайте первый плейлист кнопкой ниже.</string>
+    <string name="empty_playlist_title">Плейлист пуст</string>
+    <string name="empty_playlist_subtitle">Добавьте треки из экрана Библиотека.</string>
+    <string name="error_unknown">Что-то пошло не так</string>
+    <string name="retry">Повторить</string>
+
+    <!-- Permission -->
+    <string name="permission_title">Нужен доступ к аудио</string>
+    <string name="permission_message">Genesis нужен доступ к аудиофайлам, чтобы показать вашу библиотеку и проигрывать музыку.</string>
+    <string name="permission_grant">Разрешить доступ</string>
+    <string name="permission_open_settings">Открыть настройки</string>
+    <string name="permission_permanently_denied">Доступ запрещён навсегда. Откройте настройки, чтобы выдать разрешение.</string>
+
+    <!-- Playlist dialogs -->
+    <string name="new_playlist">Новый плейлист</string>
+    <string name="rename_playlist">Переименовать плейлист</string>
+    <string name="delete_playlist_title">Удалить плейлист?</string>
+    <string name="delete_playlist_message">Плейлист будет удалён. Треки на устройстве сохранятся.</string>
+    <string name="playlist_name_hint">Название плейлиста</string>
+    <string name="track_count">Треков: %1$d</string>
+
+    <!-- Now playing -->
+    <string name="now_playing">Сейчас играет</string>
+    <string name="not_playing">Ничего не играет</string>
+
+    <!-- Snackbars -->
+    <string name="snack_playlist_created">Плейлист создан</string>
+    <string name="snack_playlist_renamed">Плейлист переименован</string>
+    <string name="snack_playlist_deleted">Плейлист удалён</string>
+    <string name="snack_tracks_added">Добавлено треков: %1$d</string>
+    <string name="snack_track_added">Трек добавлен</string>
+    <string name="snack_tracks_removed">Удалено треков: %1$d</string>
+    <string name="snack_track_removed">Трек удалён</string>
+
+    <!-- Settings -->
+    <string name="pref_theme">Тема</string>
+    <string name="pref_theme_auto">Как в системе</string>
+    <string name="pref_theme_light">Светлая</string>
+    <string name="pref_theme_dark">Тёмная</string>
+    <string name="pref_palette">Палитра</string>
+    <string name="pref_language">Язык</string>
+    <string name="pref_language_system">Как в системе</string>
+    <string name="pref_language_english">English</string>
+    <string name="pref_language_russian">Русский</string>
+    <string name="pref_font_scale">Размер интерфейса</string>
+    <string name="font_scale_small">Маленький (85%)</string>
+    <string name="font_scale_normal">Обычный (100%)</string>
+    <string name="font_scale_large">Большой (115%)</string>
+    <string name="font_scale_xlarge">Очень большой (130%)</string>
+
+    <!-- Sort -->
+    <string name="sort_by">Сортировка</string>
+    <string name="sort_date_added_desc">По дате добавления</string>
+    <string name="sort_title_asc">Название А→Я</string>
+    <string name="sort_title_desc">Название Я→А</string>
+    <string name="sort_artist_asc">Артист А→Я</string>
+    <string name="sort_album_asc">Альбом А→Я</string>
+    <string name="sort_duration_asc">Длительность ↑</string>
+    <string name="sort_duration_desc">Длительность ↓</string>
+
+    <!-- Palettes -->
+    <string name="palette_verdant">Зелёная</string>
+    <string name="palette_amber">Янтарная</string>
+    <string name="palette_indigo">Индиго</string>
+    <string name="palette_crimson">Багровая</string>
+    <string name="palette_teal">Бирюзовая</string>
+    <string name="palette_dynamic">Material You</string>
 </resources>

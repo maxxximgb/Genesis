@@ -109,11 +109,8 @@ class PlaylistDetailViewModelTest {
         val tracks = listOf(track(1L))
         vm.addTracks(tracks)
         verify(addUc).invoke(eq(99L), eq(tracks))
-
-        vm.removeTracks(listOf(1L))
-        verify(removeUc).invoke(eq(99L), eq(listOf(1L)))
-
-        vm.reorder(listOf(1L))
-        verify(reorderUc).invoke(eq(99L), eq(listOf(1L)))
+        // removeSelected / moveSelected are tested via ComputeMoveTest +
+        // PlaylistDetailViewModelMoveTest; selection-based API doesn't accept
+        // explicit lists anymore.
     }
 }

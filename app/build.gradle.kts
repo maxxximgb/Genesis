@@ -115,11 +115,15 @@ dependencies {
 
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.4")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.4")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.4")
 
     implementation("androidx.paging:paging-runtime-ktx:3.3.2")
     implementation("androidx.paging:paging-compose:3.3.2")
 
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
+
+    implementation("io.coil-kt:coil-compose:2.6.0")
+    implementation("com.materialkolor:material-kolor:1.7.0")
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
     implementation("com.google.android.material:material:1.12.0")

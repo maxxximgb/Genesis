@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.maxxximgb.genesis.domain.usecase.playlist.CreatePlaylistUseCase
 import dev.maxxximgb.genesis.domain.usecase.playlist.DeletePlaylistUseCase
-import dev.maxxximgb.genesis.domain.usecase.playlist.ObservePlaylistsUseCase
+import dev.maxxximgb.genesis.domain.usecase.playlist.ObservePlaylistSummariesUseCase
 import dev.maxxximgb.genesis.domain.usecase.playlist.RenamePlaylistUseCase
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -17,13 +17,13 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PlaylistsViewModel @Inject constructor(
-    observePlaylists: ObservePlaylistsUseCase,
+    observePlaylistSummaries: ObservePlaylistSummariesUseCase,
     private val createPlaylist: CreatePlaylistUseCase,
     private val renamePlaylist: RenamePlaylistUseCase,
     private val deletePlaylist: DeletePlaylistUseCase,
 ) : ViewModel() {
 
-    val uiState: StateFlow<PlaylistsUiState> = observePlaylists()
+    val uiState: StateFlow<PlaylistsUiState> = observePlaylistSummaries()
         .map<_, PlaylistsUiState> { PlaylistsUiState.Content(it) }
         .catch { e -> emit(PlaylistsUiState.Error(e.message ?: "Unknown error")) }
         .stateIn(

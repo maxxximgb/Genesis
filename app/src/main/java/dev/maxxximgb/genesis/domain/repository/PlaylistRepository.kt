@@ -8,6 +8,8 @@ interface PlaylistRepository {
 
     fun observePlaylists(): Flow<List<Playlist>>
 
+    fun observePlaylistsWithCounts(): Flow<List<dev.maxxximgb.genesis.domain.model.PlaylistSummary>>
+
     fun observePlaylist(id: Long): Flow<Playlist?>
 
     fun observePlaylistTracks(playlistId: Long): Flow<List<Track>>
