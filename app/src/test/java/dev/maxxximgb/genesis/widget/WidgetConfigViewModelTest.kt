@@ -32,8 +32,9 @@ class WidgetConfigViewModelTest {
             on { invoke() } doReturn flowOf(rows)
         }
         val prefs = mock<WidgetPreferencesStore>()
+        val userPrefs = mock<dev.maxxximgb.genesis.data.preferences.UserPreferencesStore>()
         val updater = mock<WidgetUpdater>()
-        val vm = WidgetConfigViewModel(useCase, prefs, updater)
+        val vm = WidgetConfigViewModel(useCase, prefs, userPrefs, updater)
 
         vm.playlists.test {
             // Initial value emitted by stateIn before upstream collection completes.
@@ -51,8 +52,9 @@ class WidgetConfigViewModelTest {
             on { invoke() } doReturn flowOf(emptyList())
         }
         val prefs = mock<WidgetPreferencesStore>()
+        val userPrefs = mock<dev.maxxximgb.genesis.data.preferences.UserPreferencesStore>()
         val updater = mock<WidgetUpdater>()
-        val vm = WidgetConfigViewModel(useCase, prefs, updater)
+        val vm = WidgetConfigViewModel(useCase, prefs, userPrefs, updater)
 
         var called = false
         vm.bind(appWidgetId = 42, playlistId = 7L) { called = true }
@@ -68,8 +70,9 @@ class WidgetConfigViewModelTest {
             on { invoke() } doReturn flowOf(emptyList())
         }
         val prefs = mock<WidgetPreferencesStore>()
+        val userPrefs = mock<dev.maxxximgb.genesis.data.preferences.UserPreferencesStore>()
         val updater = mock<WidgetUpdater>()
-        val vm = WidgetConfigViewModel(useCase, prefs, updater)
+        val vm = WidgetConfigViewModel(useCase, prefs, userPrefs, updater)
 
         var firstCalled = 0
         var secondCalled = 0

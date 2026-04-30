@@ -137,9 +137,8 @@
     <string name="widget_play_playlist">Play playlist</string>
     <string name="widget_foreign_subtitle">Tap to play</string>
     <string name="widget_bg_label">Background</string>
-    <string name="widget_bg_dynamic">Dynamic</string>
-    <string name="widget_bg_theme">Theme</string>
-    <string name="widget_bg_solid">Solid</string>
+    <string name="widget_bg_dark">Dark</string>
+    <string name="widget_bg_light">Light</string>
     <string name="cd_loop_off">Loop: off</string>
     <string name="cd_loop_all">Loop: repeat all</string>
     <string name="cd_loop_one">Loop: repeat one</string>

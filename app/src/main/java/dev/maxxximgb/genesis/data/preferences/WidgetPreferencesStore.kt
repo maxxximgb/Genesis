@@ -32,34 +32,29 @@ class WidgetPreferencesStore @Inject constructor(
         dataStore.edit { it[playlistKeyFor(appWidgetId)] = playlistId }
     }
 
+    /** Falls back to Dark when nothing is stored — safe default for widget render path. */
     fun observeBackgroundFor(appWidgetId: Int): Flow<WidgetBackgroundChoice> = dataStore.data
-        .map { decodeBackgroundChoice(it[bgModeKeyFor(appWidgetId)], it[bgColorKeyFor(appWidgetId)]) }
+        .map {
+            decodeBackgroundChoice(it[bgModeKeyFor(appWidgetId)])
+                ?: WidgetBackgroundChoice.Dark
+        }
         .distinctUntilChanged()
 
-    suspend fun getBackgroundFor(appWidgetId: Int): WidgetBackgroundChoice =
-        dataStore.data.first().let {
-            decodeBackgroundChoice(it[bgModeKeyFor(appWidgetId)], it[bgColorKeyFor(appWidgetId)])
-        }
+    /** Returns null when no choice has been persisted yet. Caller decides the default. */
+    suspend fun getStoredBackgroundFor(appWidgetId: Int): WidgetBackgroundChoice? =
+        decodeBackgroundChoice(dataStore.data.first()[bgModeKeyFor(appWidgetId)])
 
     suspend fun setBackgroundFor(appWidgetId: Int, choice: WidgetBackgroundChoice) {
-        dataStore.edit { prefs ->
-            prefs[bgModeKeyFor(appWidgetId)] = choice.encodeMode()
-            when (choice) {
-                is WidgetBackgroundChoice.Solid -> prefs[bgColorKeyFor(appWidgetId)] = choice.argb
-                else -> prefs.remove(bgColorKeyFor(appWidgetId))
-            }
-        }
+        dataStore.edit { it[bgModeKeyFor(appWidgetId)] = choice.encodeMode() }
     }
 
     suspend fun clear(appWidgetId: Int) {
         dataStore.edit {
             it.remove(playlistKeyFor(appWidgetId))
             it.remove(bgModeKeyFor(appWidgetId))
-            it.remove(bgColorKeyFor(appWidgetId))
         }
     }
 
     private fun playlistKeyFor(appWidgetId: Int) = longPreferencesKey("widget_playlist_$appWidgetId")
     private fun bgModeKeyFor(appWidgetId: Int) = intPreferencesKey("widget_bg_mode_$appWidgetId")
-    private fun bgColorKeyFor(appWidgetId: Int) = intPreferencesKey("widget_bg_color_$appWidgetId")
 }

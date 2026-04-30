@@ -3,6 +3,7 @@ package dev.maxxximgb.genesis.widget
 import android.app.Activity
 import android.appwidget.AppWidgetManager
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -23,7 +24,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.QueueMusic
@@ -44,6 +44,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -102,9 +103,11 @@ private fun WidgetConfigScreen(
     val playlists by viewModel.playlists.collectAsStateWithLifecycle()
     val isBinding by viewModel.isBinding.collectAsStateWithLifecycle()
     val background by viewModel.selectedBackground.collectAsStateWithLifecycle()
+    val isSystemInDark = (LocalConfiguration.current.uiMode and Configuration.UI_MODE_NIGHT_MASK) ==
+        Configuration.UI_MODE_NIGHT_YES
 
     LaunchedEffect(appWidgetId) {
-        viewModel.hydrateBackground(appWidgetId)
+        viewModel.hydrateBackground(appWidgetId, isSystemInDark)
     }
 
     Scaffold(
@@ -173,51 +176,25 @@ private fun BackgroundPicker(
         )
         Spacer(Modifier.height(12.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            BgModeChip(
-                label = stringResource(R.string.widget_bg_dynamic),
-                selected = selected is WidgetBackgroundChoice.Dynamic,
-                onClick = { onSelected(WidgetBackgroundChoice.Dynamic) },
-                preview = { DynamicPreviewSwatch() },
+            BgChip(
+                label = stringResource(R.string.widget_bg_dark),
+                selected = selected == WidgetBackgroundChoice.Dark,
+                onClick = { onSelected(WidgetBackgroundChoice.Dark) },
+                preview = { Swatch(WidgetBackgroundChoice.Dark) },
             )
-            BgModeChip(
-                label = stringResource(R.string.widget_bg_theme),
-                selected = selected is WidgetBackgroundChoice.Theme,
-                onClick = { onSelected(WidgetBackgroundChoice.Theme) },
-                preview = { ThemePreviewSwatch() },
+            BgChip(
+                label = stringResource(R.string.widget_bg_light),
+                selected = selected == WidgetBackgroundChoice.Light,
+                onClick = { onSelected(WidgetBackgroundChoice.Light) },
+                preview = { Swatch(WidgetBackgroundChoice.Light) },
             )
-            BgModeChip(
-                label = stringResource(R.string.widget_bg_solid),
-                selected = selected is WidgetBackgroundChoice.Solid,
-                onClick = {
-                    val current = (selected as? WidgetBackgroundChoice.Solid)?.argb
-                        ?: WidgetBackgroundChoice.PRESETS.first()
-                    onSelected(WidgetBackgroundChoice.Solid(current))
-                },
-                preview = {
-                    val argb = (selected as? WidgetBackgroundChoice.Solid)?.argb
-                        ?: WidgetBackgroundChoice.PRESETS.first()
-                    SolidPreviewSwatch(argb)
-                },
-            )
-        }
-        if (selected is WidgetBackgroundChoice.Solid) {
-            Spacer(Modifier.height(16.dp))
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                WidgetBackgroundChoice.PRESETS.forEach { argb ->
-                    SolidColorTile(
-                        argb = argb,
-                        selected = selected.argb == argb,
-                        onClick = { onSelected(WidgetBackgroundChoice.Solid(argb)) },
-                    )
-                }
-            }
         }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun BgModeChip(
+private fun BgChip(
     label: String,
     selected: Boolean,
     onClick: () -> Unit,
@@ -233,67 +210,17 @@ private fun BgModeChip(
 }
 
 @Composable
-private fun DynamicPreviewSwatch() {
-    val colors = listOf(
-        Color(0xFFE0506B),
-        Color(0xFF3D6EE0),
-        Color(0xFF7FAE3A),
-    )
-    Row(
-        modifier = Modifier
-            .size(width = 24.dp, height = 16.dp)
-            .clip(RoundedCornerShape(4.dp)),
-    ) {
-        colors.forEach { color ->
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxHeight()
-                    .background(color),
-            )
-        }
-    }
-}
-
-@Composable
-private fun ThemePreviewSwatch() {
+private fun Swatch(choice: WidgetBackgroundChoice) {
+    val colors = WidgetBackgroundChoice.colorsFor(choice)
     Box(
         modifier = Modifier
             .size(width = 24.dp, height = 16.dp)
             .clip(RoundedCornerShape(4.dp))
-            .background(MaterialTheme.colorScheme.surfaceVariant)
+            .background(Color(colors.background))
             .border(
                 width = 1.dp,
-                color = MaterialTheme.colorScheme.outline,
+                color = MaterialTheme.colorScheme.outlineVariant,
                 shape = RoundedCornerShape(4.dp),
             ),
-    )
-}
-
-@Composable
-private fun SolidPreviewSwatch(argb: Int) {
-    Box(
-        modifier = Modifier
-            .size(width = 24.dp, height = 16.dp)
-            .clip(RoundedCornerShape(4.dp))
-            .background(Color(argb)),
-    )
-}
-
-@Composable
-private fun SolidColorTile(argb: Int, selected: Boolean, onClick: () -> Unit) {
-    val borderWidth = if (selected) 3.dp else 1.dp
-    val borderColor = if (selected) {
-        MaterialTheme.colorScheme.onSurface
-    } else {
-        MaterialTheme.colorScheme.outlineVariant
-    }
-    Box(
-        modifier = Modifier
-            .size(36.dp)
-            .clip(CircleShape)
-            .background(Color(argb))
-            .border(width = borderWidth, color = borderColor, shape = CircleShape)
-            .clickable(onClick = onClick),
     )
 }

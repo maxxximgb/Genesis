@@ -1,7 +1,9 @@
 package dev.maxxximgb.genesis.widget
 
+import dev.maxxximgb.genesis.data.preferences.UserPreferencesStore
 import dev.maxxximgb.genesis.data.preferences.WidgetPreferencesStore
 import dev.maxxximgb.genesis.domain.usecase.playlist.ObservePlaylistsUseCase
+import dev.maxxximgb.genesis.ui.theme.ThemeMode
 import dev.maxxximgb.genesis.util.MainDispatcherRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
@@ -10,6 +12,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
@@ -22,49 +25,81 @@ class WidgetConfigViewModelBackgroundTest {
     val mainRule = MainDispatcherRule()
 
     @Test
-    fun initialBackgroundStateIsDynamic() {
+    fun initialBackgroundStateIsDark() {
         val vm = newVm()
-        assertEquals(WidgetBackgroundChoice.Dynamic, vm.selectedBackground.value)
+        assertEquals(WidgetBackgroundChoice.Dark, vm.selectedBackground.value)
     }
 
     @Test
-    fun hydrateBackgroundLoadsStoredChoice() = runTest {
-        val stored = WidgetBackgroundChoice.Solid(0xFFE0506B.toInt())
-        val prefs = mock<WidgetPreferencesStore> {
-            onBlocking { getBackgroundFor(42) } doReturn stored
+    fun hydrateLoadsStoredChoice() = runTest {
+        val widgetPrefs = mock<WidgetPreferencesStore> {
+            onBlocking { getStoredBackgroundFor(42) } doReturn WidgetBackgroundChoice.Light
         }
-        val vm = newVm(prefs = prefs)
+        val vm = newVm(widgetPrefs = widgetPrefs)
 
-        vm.hydrateBackground(appWidgetId = 42)
+        vm.hydrateBackground(appWidgetId = 42, isSystemInDarkMode = false)
         advanceUntilIdle()
 
-        assertEquals(stored, vm.selectedBackground.value)
+        assertEquals(WidgetBackgroundChoice.Light, vm.selectedBackground.value)
+    }
+
+    @Test
+    fun hydrateUsesAppLightThemeAsDefaultWhenNothingStored() = runTest {
+        val widgetPrefs = mock<WidgetPreferencesStore> {
+            onBlocking { getStoredBackgroundFor(any()) } doReturn null
+        }
+        val userPrefs = mock<UserPreferencesStore> {
+            on { observeThemeMode() } doReturn flowOf(ThemeMode.LIGHT)
+        }
+        val vm = newVm(widgetPrefs = widgetPrefs, userPrefs = userPrefs)
+
+        vm.hydrateBackground(appWidgetId = 1, isSystemInDarkMode = true /* should be ignored */)
+        advanceUntilIdle()
+
+        assertEquals(WidgetBackgroundChoice.Light, vm.selectedBackground.value)
+    }
+
+    @Test
+    fun hydrateFallsBackToSystemWhenAppThemeIsAuto() = runTest {
+        val widgetPrefs = mock<WidgetPreferencesStore> {
+            onBlocking { getStoredBackgroundFor(any()) } doReturn null
+        }
+        val userPrefs = mock<UserPreferencesStore> {
+            on { observeThemeMode() } doReturn flowOf(ThemeMode.AUTO)
+        }
+        val vm = newVm(widgetPrefs = widgetPrefs, userPrefs = userPrefs)
+
+        vm.hydrateBackground(appWidgetId = 1, isSystemInDarkMode = true)
+        advanceUntilIdle()
+        assertEquals(WidgetBackgroundChoice.Dark, vm.selectedBackground.value)
     }
 
     @Test
     fun onBackgroundChosenUpdatesState() {
         val vm = newVm()
-        vm.onBackgroundChosen(WidgetBackgroundChoice.Theme)
-        assertEquals(WidgetBackgroundChoice.Theme, vm.selectedBackground.value)
+        vm.onBackgroundChosen(WidgetBackgroundChoice.Light)
+        assertEquals(WidgetBackgroundChoice.Light, vm.selectedBackground.value)
     }
 
     @Test
     fun bindPersistsBothPlaylistAndBackground() = runTest {
-        val prefs = mock<WidgetPreferencesStore>()
-        val vm = newVm(prefs = prefs)
+        val widgetPrefs = mock<WidgetPreferencesStore>()
+        val vm = newVm(widgetPrefs = widgetPrefs)
 
-        val choice = WidgetBackgroundChoice.Solid(0xFF3D6EE0.toInt())
-        vm.onBackgroundChosen(choice)
+        vm.onBackgroundChosen(WidgetBackgroundChoice.Light)
         vm.bind(appWidgetId = 7, playlistId = 99L) { /* committed */ }
         advanceUntilIdle()
 
-        verify(prefs).setPlaylistFor(eq(7), eq(99L))
-        verify(prefs).setBackgroundFor(eq(7), eq(choice))
+        verify(widgetPrefs).setPlaylistFor(eq(7), eq(99L))
+        verify(widgetPrefs).setBackgroundFor(eq(7), eq(WidgetBackgroundChoice.Light))
     }
 
-    private fun newVm(prefs: WidgetPreferencesStore = mock()): WidgetConfigViewModel {
+    private fun newVm(
+        widgetPrefs: WidgetPreferencesStore = mock(),
+        userPrefs: UserPreferencesStore = mock { on { observeThemeMode() } doReturn flowOf(ThemeMode.AUTO) },
+    ): WidgetConfigViewModel {
         val useCase = mock<ObservePlaylistsUseCase> { on { invoke() } doReturn flowOf(emptyList()) }
         val updater = mock<WidgetUpdater>()
-        return WidgetConfigViewModel(useCase, prefs, updater)
+        return WidgetConfigViewModel(useCase, widgetPrefs, userPrefs, updater)
     }
 }

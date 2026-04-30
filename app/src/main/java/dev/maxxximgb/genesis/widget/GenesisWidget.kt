@@ -93,7 +93,7 @@ class GenesisWidget : GlanceAppWidget() {
                 }
                 val backgroundChoice by deps.widgetPreferencesStore()
                     .observeBackgroundFor(appWidgetId)
-                    .collectAsState(initial = WidgetBackgroundChoice.Dynamic)
+                    .collectAsState(initial = WidgetBackgroundChoice.Dark)
 
                 val detail = playlist?.let { PlaylistDetail(playlist = it, tracks = tracks) }
 
@@ -171,9 +171,8 @@ private fun WidgetContent(
         WidgetRenderMode.FOREIGN -> {
             val firstTrack = detail!!.tracks.first()
             val art = rememberAlbumArt(firstTrack.albumId, artLoader)
-            val accent = rememberAccent(art, backgroundChoice)
             BoundCard(
-                accent = accent,
+                choice = backgroundChoice,
                 art = art,
                 title = detail.playlist.name,
                 subtitle = context.getString(R.string.widget_foreign_subtitle),
@@ -195,9 +194,8 @@ private fun WidgetContent(
                 lastIndex = detail.tracks.lastIndex,
             )
             val art = rememberAlbumArt(currentTrack.albumId, artLoader)
-            val accent = rememberAccent(art, backgroundChoice)
             BoundCard(
-                accent = accent,
+                choice = backgroundChoice,
                 art = art,
                 title = currentTrack.title,
                 subtitle = detail.playlist.name,
@@ -217,25 +215,18 @@ private data class AccentColors(
     val onBackgroundMuted: ColorProvider,
 )
 
-@Composable
-private fun resolveAccentColors(accent: WidgetAccent?): AccentColors =
-    if (accent != null) {
-        AccentColors(
-            background = ColorProvider(Color(accent.background)),
-            onBackground = ColorProvider(Color(accent.onBackground)),
-            onBackgroundMuted = ColorProvider(Color(accent.onBackgroundMuted)),
-        )
-    } else {
-        AccentColors(
-            background = GlanceTheme.colors.widgetBackground,
-            onBackground = GlanceTheme.colors.onSurface,
-            onBackgroundMuted = GlanceTheme.colors.onSurfaceVariant,
-        )
-    }
+private fun resolveAccentColors(choice: WidgetBackgroundChoice): AccentColors {
+    val colors = WidgetBackgroundChoice.colorsFor(choice)
+    return AccentColors(
+        background = ColorProvider(Color(colors.background)),
+        onBackground = ColorProvider(Color(colors.onBackground)),
+        onBackgroundMuted = ColorProvider(Color(colors.onBackgroundMuted)),
+    )
+}
 
 @Composable
 private fun BoundCard(
-    accent: WidgetAccent?,
+    choice: WidgetBackgroundChoice,
     art: Bitmap?,
     title: String,
     subtitle: String,
@@ -245,7 +236,7 @@ private fun BoundCard(
     params: ActionParameters,
     openAppAction: Action,
 ) {
-    val colors = resolveAccentColors(accent)
+    val colors = resolveAccentColors(choice)
     val width = LocalSize.current.width
     val buttonSize = pickButtonSize(width)
 
@@ -492,17 +483,6 @@ private fun rememberAlbumArt(albumId: Long?, loader: WidgetArtLoader): Bitmap? {
     }
     return art
 }
-
-@Composable
-private fun rememberAccent(art: Bitmap?, choice: WidgetBackgroundChoice): WidgetAccent? =
-    remember(art, choice) {
-        when (choice) {
-            WidgetBackgroundChoice.Theme -> null
-            is WidgetBackgroundChoice.Solid -> WidgetAccentExtractor.fromSolid(choice.argb)
-            WidgetBackgroundChoice.Dynamic ->
-                runCatching { WidgetAccentExtractor.extract(art) }.getOrNull()
-        }
-    }
 
 private fun pickButtonSize(width: Dp): Int = when {
     width >= 340.dp -> 40

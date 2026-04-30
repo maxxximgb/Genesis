@@ -137,9 +137,8 @@
     <string name="widget_play_playlist">Запустить плейлист</string>
     <string name="widget_foreign_subtitle">Нажмите, чтобы играть</string>
     <string name="widget_bg_label">Фон</string>
-    <string name="widget_bg_dynamic">Динамический</string>
-    <string name="widget_bg_theme">Тема</string>
-    <string name="widget_bg_solid">Сплошной</string>
+    <string name="widget_bg_dark">Тёмный</string>
+    <string name="widget_bg_light">Светлый</string>
     <string name="cd_loop_off">Цикл: выключен</string>
     <string name="cd_loop_all">Цикл: повтор всего</string>
     <string name="cd_loop_one">Цикл: повтор трека</string>
