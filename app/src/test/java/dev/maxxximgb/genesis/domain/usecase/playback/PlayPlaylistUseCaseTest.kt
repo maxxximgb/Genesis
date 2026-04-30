@@ -1,8 +1,13 @@
 package dev.maxxximgb.genesis.domain.usecase.playback
 
+import dev.maxxximgb.genesis.data.preferences.PlaylistModeStore
+import dev.maxxximgb.genesis.domain.model.LoopState
+import dev.maxxximgb.genesis.domain.model.PlaybackState
+import dev.maxxximgb.genesis.domain.model.RepeatMode
 import dev.maxxximgb.genesis.domain.model.Track
 import dev.maxxximgb.genesis.domain.playback.PlaybackController
 import dev.maxxximgb.genesis.domain.repository.PlaylistRepository
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 import org.mockito.kotlin.doReturn
@@ -24,18 +29,62 @@ class PlayPlaylistUseCaseTest {
         dateAdded = id,
     )
 
+    private fun controllerWithIdleState(): PlaybackController = mock {
+        on { state } doReturn MutableStateFlow(PlaybackState())
+    }
+
     @Test
     fun fetchesTracksAndDelegatesToController() = runTest {
         val tracks = listOf(track(1L), track(2L), track(3L))
         val repo = mock<PlaylistRepository> {
             onBlocking { getTracksForPlaylist(42L) } doReturn tracks
         }
-        val controller = mock<PlaybackController>()
-        val useCase = PlayPlaylistUseCase(repo, controller)
+        val controller = controllerWithIdleState()
+        val modeStore = mock<PlaylistModeStore> {
+            onBlocking { getMode(42L) } doReturn LoopState.OFF
+        }
+        val useCase = PlayPlaylistUseCase(repo, controller, modeStore)
 
         useCase(playlistId = 42L, startIndex = 1)
 
         verify(controller).playQueue(eq(42L), eq(tracks), eq(1))
+    }
+
+    @Test
+    fun appliesPersistedShuffleAndRepeatBeforePlay() = runTest {
+        val tracks = listOf(track(1L))
+        val repo = mock<PlaylistRepository> {
+            onBlocking { getTracksForPlaylist(7L) } doReturn tracks
+        }
+        val controller = controllerWithIdleState()
+        val modeStore = mock<PlaylistModeStore> {
+            onBlocking { getMode(7L) } doReturn LoopState.REPEAT_ONE
+        }
+        val useCase = PlayPlaylistUseCase(repo, controller, modeStore)
+
+        useCase(playlistId = 7L)
+
+        verify(controller).setShuffleEnabled(false)
+        verify(controller).setRepeatMode(RepeatMode.ONE)
+        verify(controller).playQueue(eq(7L), eq(tracks), eq(0))
+    }
+
+    @Test
+    fun shuffleModeAppliesShuffleTrue() = runTest {
+        val tracks = listOf(track(1L))
+        val repo = mock<PlaylistRepository> {
+            onBlocking { getTracksForPlaylist(8L) } doReturn tracks
+        }
+        val controller = controllerWithIdleState()
+        val modeStore = mock<PlaylistModeStore> {
+            onBlocking { getMode(8L) } doReturn LoopState.SHUFFLE
+        }
+        val useCase = PlayPlaylistUseCase(repo, controller, modeStore)
+
+        useCase(playlistId = 8L)
+
+        verify(controller).setShuffleEnabled(true)
+        verify(controller).setRepeatMode(RepeatMode.OFF)
     }
 
     @Test
@@ -44,7 +93,8 @@ class PlayPlaylistUseCaseTest {
             onBlocking { getTracksForPlaylist(99L) } doReturn emptyList()
         }
         val controller = mock<PlaybackController>()
-        val useCase = PlayPlaylistUseCase(repo, controller)
+        val modeStore = mock<PlaylistModeStore>()
+        val useCase = PlayPlaylistUseCase(repo, controller, modeStore)
 
         useCase(playlistId = 99L, startIndex = 0)
 

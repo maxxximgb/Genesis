@@ -55,6 +55,14 @@ class PlaybackControllerImpl @Inject constructor(
         }
     }
 
+    override suspend fun play() {
+        onMain { it.play() }
+    }
+
+    override suspend fun pause() {
+        onMain { it.pause() }
+    }
+
     override suspend fun seekToNext() {
         onMain { it.seekToNext() }
     }

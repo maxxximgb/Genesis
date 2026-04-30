@@ -104,4 +104,44 @@
     <string name="palette_crimson">Crimson Red</string>
     <string name="palette_teal">Calm Teal</string>
     <string name="palette_dynamic">Material You</string>
+
+    <!-- Track row -->
+    <string name="track_more_actions">More actions</string>
+
+    <!-- Library browse tabs -->
+    <string name="browse_tracks">Tracks</string>
+    <string name="browse_albums">Albums</string>
+    <string name="browse_artists">Artists</string>
+    <string name="browse_folders">Folders</string>
+    <string name="empty_albums_title">No albums yet</string>
+    <string name="empty_artists_title">No artists yet</string>
+    <string name="empty_folders_title">No folders yet</string>
+    <string name="album_track_count">%1$d tracks</string>
+    <string name="artist_track_count">%1$d tracks · %2$d albums</string>
+    <string name="folder_track_count">%1$d tracks</string>
+    <string name="unknown_artist">Unknown artist</string>
+    <string name="recent_searches">Recent searches</string>
+    <string name="remove_recent_search">Remove from history</string>
+    <string name="toggle_layout">Toggle layout</string>
+
+    <!-- Widget -->
+    <string name="widget_label">Genesis playlist</string>
+    <string name="widget_description">Pin a playlist to your home screen.</string>
+    <string name="widget_choose_playlist">Choose a playlist</string>
+    <string name="widget_no_playlists_empty">No playlists yet. Create one in Genesis first.</string>
+    <string name="widget_unbound_title">Widget not configured</string>
+    <string name="widget_unbound_subtitle">Tap to choose a playlist</string>
+    <string name="widget_missing_playlist_title">Playlist removed</string>
+    <string name="widget_missing_playlist_subtitle">Tap to reconfigure</string>
+    <string name="widget_empty_playlist_subtitle">Playlist is empty</string>
+    <string name="widget_play_playlist">Play playlist</string>
+    <string name="widget_foreign_subtitle">Tap to play</string>
+    <string name="widget_bg_label">Background</string>
+    <string name="widget_bg_dynamic">Dynamic</string>
+    <string name="widget_bg_theme">Theme</string>
+    <string name="widget_bg_solid">Solid</string>
+    <string name="cd_loop_off">Loop: off</string>
+    <string name="cd_loop_all">Loop: repeat all</string>
+    <string name="cd_loop_one">Loop: repeat one</string>
+    <string name="cd_shuffle">Shuffle</string>
 </resources>

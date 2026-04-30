@@ -15,6 +15,10 @@ interface PlaybackController {
 
     suspend fun togglePlayPause()
 
+    suspend fun play()
+
+    suspend fun pause()
+
     suspend fun seekToNext()
 
     suspend fun seekToPrevious()

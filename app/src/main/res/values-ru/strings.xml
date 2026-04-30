@@ -104,4 +104,44 @@
     <string name="palette_crimson">Багровая</string>
     <string name="palette_teal">Бирюзовая</string>
     <string name="palette_dynamic">Material You</string>
+
+    <!-- Track row -->
+    <string name="track_more_actions">Действия</string>
+
+    <!-- Library browse tabs -->
+    <string name="browse_tracks">Треки</string>
+    <string name="browse_albums">Альбомы</string>
+    <string name="browse_artists">Артисты</string>
+    <string name="browse_folders">Папки</string>
+    <string name="empty_albums_title">Альбомов пока нет</string>
+    <string name="empty_artists_title">Исполнителей пока нет</string>
+    <string name="empty_folders_title">Папок пока нет</string>
+    <string name="album_track_count">%1$d треков</string>
+    <string name="artist_track_count">%1$d треков · %2$d альбомов</string>
+    <string name="folder_track_count">%1$d треков</string>
+    <string name="unknown_artist">Неизвестный исполнитель</string>
+    <string name="recent_searches">Недавние запросы</string>
+    <string name="remove_recent_search">Убрать из истории</string>
+    <string name="toggle_layout">Переключить вид</string>
+
+    <!-- Widget -->
+    <string name="widget_label">Плейлист Genesis</string>
+    <string name="widget_description">Закрепите плейлист на главном экране.</string>
+    <string name="widget_choose_playlist">Выберите плейлист</string>
+    <string name="widget_no_playlists_empty">Плейлистов пока нет. Создайте плейлист в Genesis.</string>
+    <string name="widget_unbound_title">Виджет не настроен</string>
+    <string name="widget_unbound_subtitle">Нажмите, чтобы выбрать плейлист</string>
+    <string name="widget_missing_playlist_title">Плейлист удалён</string>
+    <string name="widget_missing_playlist_subtitle">Нажмите, чтобы перенастроить</string>
+    <string name="widget_empty_playlist_subtitle">Плейлист пуст</string>
+    <string name="widget_play_playlist">Запустить плейлист</string>
+    <string name="widget_foreign_subtitle">Нажмите, чтобы играть</string>
+    <string name="widget_bg_label">Фон</string>
+    <string name="widget_bg_dynamic">Динамический</string>
+    <string name="widget_bg_theme">Тема</string>
+    <string name="widget_bg_solid">Сплошной</string>
+    <string name="cd_loop_off">Цикл: выключен</string>
+    <string name="cd_loop_all">Цикл: повтор всего</string>
+    <string name="cd_loop_one">Цикл: повтор трека</string>
+    <string name="cd_shuffle">Перемешка</string>
 </resources>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="240dp"
+    android:height="100dp"
+    android:viewportWidth="240"
+    android:viewportHeight="100">
+
+    <!-- Card background (accent placeholder, pinkish-coral) -->
+    <path
+        android:fillColor="#E0506B"
+        android:pathData="M20,0 H220 A20,20 0 0 1 240,20 V80 A20,20 0 0 1 220,100 H20 A20,20 0 0 1 0,80 V20 A20,20 0 0 1 20,0 Z" />
+
+    <!-- Album art panel (full left edge, slightly darker placeholder) -->
+    <path
+        android:fillColor="#A52F46"
+        android:pathData="M20,0 H100 V100 H20 A20,20 0 0 1 0,80 V20 A20,20 0 0 1 20,0 Z" />
+
+    <!-- Album art glyph -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M58,32 V60 a8,8 0 1 1 -8,-8 V40 H72 V32 Z" />
+
+    <!-- Title bar -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M114,22 H210 V32 H114 Z" />
+
+    <!-- Subtitle bar -->
+    <path
+        android:fillColor="#FFD9DD"
+        android:pathData="M114,38 H188 V46 H114 Z" />
+
+    <!-- Transport row: prev triangle -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M126,76 L120,80 L126,84 Z M126,76 H128 V84 H126 Z" />
+
+    <!-- Play triangle -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M156,72 L168,80 L156,88 Z" />
+
+    <!-- Next triangle -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M188,76 L194,80 L188,84 Z M194,76 H196 V84 H194 Z" />
+
+    <!-- Loop chip (right of next) -->
+    <path
+        android:fillColor="#FFD9DD"
+        android:pathData="M212,76 H224 V80 H226 L221,84 L216,80 H218 V78 H212 Z" />
+</vector>
