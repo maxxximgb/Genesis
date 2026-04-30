@@ -18,6 +18,7 @@ import dev.maxxximgb.genesis.data.playback.toPlayer
 import dev.maxxximgb.genesis.data.playback.toRepeatMode
 import dev.maxxximgb.genesis.domain.model.PlaybackState
 import dev.maxxximgb.genesis.domain.repository.MediaLibraryRepository
+import dev.maxxximgb.genesis.widget.WidgetUpdater
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -38,6 +39,9 @@ class PlayerService : MediaSessionService() {
 
     @Inject
     lateinit var libraryRepository: MediaLibraryRepository
+
+    @Inject
+    lateinit var widgetUpdater: WidgetUpdater
 
     private lateinit var player: ExoPlayer
     private lateinit var session: MediaSession
@@ -106,6 +110,7 @@ class PlayerService : MediaSessionService() {
         scope.launch {
             stateStore.update(snapshotState())
         }
+        widgetUpdater.requestUpdate()
     }
 
     private fun snapshotState(): PlaybackState {
