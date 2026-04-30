@@ -31,4 +31,8 @@ object Sizes {
     val albumArtLarge = 96.dp
     val iconButton = 40.dp
     val touchTarget = 48.dp
+    val railWidth = 80.dp
+    val nowPlayingBarHeight = 80.dp
+    val compactRowHeight = 56.dp
+    val searchFieldHeight = 40.dp
 }

@@ -46,7 +46,7 @@ fun PlaylistCard(
         ),
     ) {
         Row(
-            modifier = Modifier.padding(Spacing.lg),
+            modifier = Modifier.padding(horizontal = Spacing.md, vertical = Spacing.sm),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Icon(
@@ -57,10 +57,10 @@ fun PlaylistCard(
                     .size(Sizes.albumArtSmall)
                     .clip(RoundedCornerShape(Corner.sm)),
             )
-            Column(modifier = Modifier.padding(start = Spacing.lg).weight(1f)) {
+            Column(modifier = Modifier.padding(start = Spacing.md).weight(1f)) {
                 Text(
                     text = playlist.name,
-                    style = MaterialTheme.typography.titleMedium,
+                    style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,

@@ -76,6 +76,7 @@ import dev.maxxximgb.genesis.ui.library.components.SortMenu
 import dev.maxxximgb.genesis.ui.nowPlaying.NowPlayingViewModel
 import dev.maxxximgb.genesis.ui.playlists.components.CreatePlaylistDialog
 import dev.maxxximgb.genesis.ui.settings.SettingsDialog
+import dev.maxxximgb.genesis.ui.theme.Sizes
 import dev.maxxximgb.genesis.ui.theme.Spacing
 import kotlinx.coroutines.launch
 
@@ -368,7 +369,7 @@ private fun SearchField(
 
     Box(
         modifier = modifier
-            .height(40.dp)
+            .height(Sizes.searchFieldHeight)
             .clip(RoundedCornerShape(20.dp))
             .background(MaterialTheme.colorScheme.surfaceVariant),
         contentAlignment = Alignment.CenterStart,

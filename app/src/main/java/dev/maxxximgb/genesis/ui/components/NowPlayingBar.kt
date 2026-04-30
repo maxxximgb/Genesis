@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
@@ -42,13 +43,14 @@ fun NowPlayingBar(
 ) {
     Surface(
         modifier = modifier.fillMaxWidth(),
-        tonalElevation = Elevation.medium,
+        tonalElevation = Elevation.high,
         color = MaterialTheme.colorScheme.surfaceContainer,
     ) {
         Box {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .height(Sizes.nowPlayingBarHeight)
                     .clickable(onClick = onTap)
                     .padding(horizontal = Spacing.md, vertical = Spacing.sm),
                 verticalAlignment = Alignment.CenterVertically,
@@ -56,7 +58,7 @@ fun NowPlayingBar(
                 AlbumArtImage(
                     albumId = null, // 1.5: derived from currentMediaStoreId in 2.3 fullscreen
                     contentDescription = null,
-                    size = Sizes.albumArtSmall,
+                    size = Sizes.albumArtMedium,
                 )
                 Column(
                     modifier = Modifier
@@ -65,29 +67,41 @@ fun NowPlayingBar(
                 ) {
                     Text(
                         text = state.title.orEmpty(),
-                        style = MaterialTheme.typography.titleSmall,
+                        style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.onSurface,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                     )
                     Text(
                         text = state.artist ?: "—",
-                        style = MaterialTheme.typography.bodySmall,
+                        style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                     )
                 }
                 IconButton(onClick = onPrevious, enabled = state.queue.size > 1) {
-                    Icon(Icons.Filled.SkipPrevious, contentDescription = stringResource(R.string.previous))
+                    Icon(
+                        Icons.Filled.SkipPrevious,
+                        contentDescription = stringResource(R.string.previous),
+                        modifier = Modifier.size(28.dp),
+                    )
                 }
                 IconButton(onClick = onTogglePlayPause) {
                     val icon = if (state.isPlaying) Icons.Filled.Pause else Icons.Filled.PlayArrow
                     val cd = if (state.isPlaying) R.string.pause else R.string.play
-                    Icon(icon, contentDescription = stringResource(cd))
+                    Icon(
+                        icon,
+                        contentDescription = stringResource(cd),
+                        modifier = Modifier.size(28.dp),
+                    )
                 }
                 IconButton(onClick = onNext, enabled = state.queue.size > 1) {
-                    Icon(Icons.Filled.SkipNext, contentDescription = stringResource(R.string.next))
+                    Icon(
+                        Icons.Filled.SkipNext,
+                        contentDescription = stringResource(R.string.next),
+                        modifier = Modifier.size(28.dp),
+                    )
                 }
             }
             ProgressIndicator(state = state)
@@ -99,17 +113,17 @@ fun NowPlayingBar(
 private fun BoxScope.ProgressIndicator(state: PlaybackState) {
     if (state.durationMs <= 0L) return
     val fraction = (state.positionMs.toFloat() / state.durationMs.toFloat()).coerceIn(0f, 1f)
-    Box(modifier = Modifier.align(Alignment.BottomCenter).fillMaxWidth().height(2.dp)) {
+    Box(modifier = Modifier.align(Alignment.BottomCenter).fillMaxWidth().height(3.dp)) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(2.dp)
+                .height(3.dp)
                 .background(MaterialTheme.colorScheme.surfaceVariant),
         )
         Box(
             modifier = Modifier
                 .fillMaxWidth(fraction)
-                .height(2.dp)
+                .height(3.dp)
                 .background(MaterialTheme.colorScheme.primary),
         )
     }

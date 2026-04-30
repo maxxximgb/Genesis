@@ -4,8 +4,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LibraryMusic
 import androidx.compose.material.icons.filled.PlaylistPlay
 import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationRail
+import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -29,14 +29,14 @@ private val Tabs = listOf(
 )
 
 @Composable
-fun BottomBar(navController: NavController) {
+fun NavigationSidebar(navController: NavController) {
     val backStackEntry = navController.currentBackStackEntryAsState()
     val currentDestination = backStackEntry.value?.destination
 
-    NavigationBar {
+    NavigationRail {
         Tabs.forEach { tab ->
             val selected = currentDestination?.hierarchy?.any { it.route == tab.route } == true
-            NavigationBarItem(
+            NavigationRailItem(
                 selected = selected,
                 onClick = {
                     navController.navigate(tab.route) {
@@ -53,4 +53,3 @@ fun BottomBar(navController: NavController) {
         }
     }
 }
-
