@@ -21,4 +21,25 @@ object Routes {
 
         fun forId(playlistId: Long): String = "playlist/$playlistId"
     }
+
+    object AlbumDetail {
+        const val ARG_ALBUM_ID = "albumId"
+        const val pattern = "album/{$ARG_ALBUM_ID}"
+
+        fun forId(albumId: Long): String = "album/$albumId"
+    }
+
+    object ArtistDetail {
+        const val ARG_ARTIST_ID = "artistId"
+        const val pattern = "artist/{$ARG_ARTIST_ID}"
+
+        fun forId(artistId: Long): String = "artist/$artistId"
+    }
+
+    object FolderDetail {
+        const val ARG_BUCKET_ID = "bucketId"
+        const val pattern = "folder/{$ARG_BUCKET_ID}"
+
+        fun forId(bucketId: Long): String = "folder/$bucketId"
+    }
 }

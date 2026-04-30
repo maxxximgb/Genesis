@@ -11,6 +11,9 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import dev.maxxximgb.genesis.ui.library.AlbumDetailScreen
+import dev.maxxximgb.genesis.ui.library.ArtistDetailScreen
+import dev.maxxximgb.genesis.ui.library.FolderDetailScreen
 import dev.maxxximgb.genesis.ui.library.LibraryScreen
 import dev.maxxximgb.genesis.ui.playlistDetail.PlaylistDetailScreen
 import dev.maxxximgb.genesis.ui.playlists.PlaylistsScreen
@@ -48,6 +51,9 @@ fun AppNavHost(
                 addToPlaylistId = addToPlaylistId,
                 snackbarHostState = snackbarHostState,
                 onNavigateBack = { navController.popBackStack() },
+                onNavigateToAlbum = { navController.navigate(Routes.AlbumDetail.forId(it)) },
+                onNavigateToArtist = { navController.navigate(Routes.ArtistDetail.forId(it)) },
+                onNavigateToFolder = { navController.navigate(Routes.FolderDetail.forId(it)) },
             )
         }
         composable(Routes.Playlists.path) {
@@ -68,6 +74,39 @@ fun AppNavHost(
                 onAddTracks = { playlistId ->
                     navController.navigate(Routes.Library.addToPlaylist(playlistId))
                 },
+            )
+        }
+        composable(
+            route = Routes.AlbumDetail.pattern,
+            arguments = listOf(
+                navArgument(Routes.AlbumDetail.ARG_ALBUM_ID) { type = NavType.LongType },
+            ),
+        ) {
+            AlbumDetailScreen(
+                onNavigateBack = { navController.popBackStack() },
+                snackbarHostState = snackbarHostState,
+            )
+        }
+        composable(
+            route = Routes.ArtistDetail.pattern,
+            arguments = listOf(
+                navArgument(Routes.ArtistDetail.ARG_ARTIST_ID) { type = NavType.LongType },
+            ),
+        ) {
+            ArtistDetailScreen(
+                onNavigateBack = { navController.popBackStack() },
+                snackbarHostState = snackbarHostState,
+            )
+        }
+        composable(
+            route = Routes.FolderDetail.pattern,
+            arguments = listOf(
+                navArgument(Routes.FolderDetail.ARG_BUCKET_ID) { type = NavType.LongType },
+            ),
+        ) {
+            FolderDetailScreen(
+                onNavigateBack = { navController.popBackStack() },
+                snackbarHostState = snackbarHostState,
             )
         }
     }

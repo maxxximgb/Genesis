@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dev.maxxximgb.genesis.data.playback.PlaybackStateStore
 import dev.maxxximgb.genesis.domain.model.Track
 import dev.maxxximgb.genesis.domain.usecase.playback.PlayPlaylistUseCase
 import dev.maxxximgb.genesis.domain.usecase.playlist.AddTracksToPlaylistUseCase
@@ -14,6 +15,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -24,6 +26,7 @@ import javax.inject.Inject
 class PlaylistDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     observePlaylistDetail: ObservePlaylistDetailUseCase,
+    playbackStateStore: PlaybackStateStore,
     private val addTracksUseCase: AddTracksToPlaylistUseCase,
     private val removeTracksUseCase: RemoveTracksFromPlaylistUseCase,
     private val reorderTracksUseCase: ReorderPlaylistTracksUseCase,
@@ -37,14 +40,21 @@ class PlaylistDetailViewModel @Inject constructor(
     private val selectedIds = MutableStateFlow<Set<Long>>(emptySet())
 
     private val detailFlow = observePlaylistDetail(playlistId)
+    private val currentMediaStoreIdFlow =
+        playbackStateStore.flow.map { it.currentMediaStoreId }.distinctUntilChanged()
 
     val uiState: StateFlow<PlaylistDetailUiState> = combine(
         detailFlow,
         selectedIds,
-    ) { detail, selected ->
+        currentMediaStoreIdFlow,
+    ) { detail, selected, currentId ->
         when {
             detail == null -> PlaylistDetailUiState.NotFound
-            else -> PlaylistDetailUiState.Content(detail = detail, selectedIds = selected)
+            else -> PlaylistDetailUiState.Content(
+                detail = detail,
+                selectedIds = selected,
+                currentMediaStoreId = currentId,
+            )
         }
     }.stateIn(
         scope = viewModelScope,
@@ -74,6 +84,12 @@ class PlaylistDetailViewModel @Inject constructor(
         }
         clearSelection()
         return ids.size
+    }
+
+    fun removeOne(mediaStoreId: Long) {
+        viewModelScope.launch {
+            removeTracksUseCase(playlistId, listOf(mediaStoreId))
+        }
     }
 
     fun moveSelected(direction: Int) {

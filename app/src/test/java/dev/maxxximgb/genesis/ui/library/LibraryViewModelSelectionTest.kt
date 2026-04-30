@@ -5,10 +5,16 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import app.cash.turbine.test
+import dev.maxxximgb.genesis.data.playback.PlaybackStateStore
+import dev.maxxximgb.genesis.data.preferences.SearchHistoryStore
 import dev.maxxximgb.genesis.data.preferences.UserPreferencesStore
+import dev.maxxximgb.genesis.domain.model.PlaybackState
 import dev.maxxximgb.genesis.domain.model.Playlist
 import dev.maxxximgb.genesis.domain.model.SortOrder
 import dev.maxxximgb.genesis.domain.model.Track
+import dev.maxxximgb.genesis.domain.usecase.library.ObserveAlbumsUseCase
+import dev.maxxximgb.genesis.domain.usecase.library.ObserveArtistsUseCase
+import dev.maxxximgb.genesis.domain.usecase.library.ObserveFoldersUseCase
 import dev.maxxximgb.genesis.domain.usecase.library.SearchLibraryUseCase
 import dev.maxxximgb.genesis.domain.usecase.playlist.AddTracksToPlaylistUseCase
 import dev.maxxximgb.genesis.domain.usecase.playlist.ObservePlaylistsUseCase
@@ -52,13 +58,22 @@ class LibraryViewModelSelectionTest {
         val sortFlow = MutableStateFlow(SortOrder.DATE_ADDED_DESC)
         val prefs = mock<UserPreferencesStore> {
             on { observeLibrarySort() } doReturn sortFlow
+            on { observeAlbumsLayout() } doReturn flowOf(AlbumsLayout.LIST)
         }
         val pager = emptyPager()
         val search = mock<SearchLibraryUseCase> { on { invoke(any(), any()) } doReturn pager }
         val observePlaylists = mock<ObservePlaylistsUseCase> {
             on { invoke() } doReturn flowOf(emptyList())
         }
-        return LibraryViewModel(search, prefs, addUc, mock(), observePlaylists)
+        val playback = mock<PlaybackStateStore> { on { flow } doReturn flowOf(PlaybackState()) }
+        val searchHistory = mock<SearchHistoryStore> { on { observeRecent() } doReturn flowOf(emptyList()) }
+        val observeAlbums = mock<ObserveAlbumsUseCase> { on { invoke() } doReturn flowOf(emptyList()) }
+        val observeArtists = mock<ObserveArtistsUseCase> { on { invoke() } doReturn flowOf(emptyList()) }
+        val observeFolders = mock<ObserveFoldersUseCase> { on { invoke() } doReturn flowOf(emptyList()) }
+        return LibraryViewModel(
+            search, prefs, addUc, mock(), searchHistory, playback,
+            observePlaylists, observeAlbums, observeArtists, observeFolders,
+        )
     }
 
     private fun track(id: Long) = Track(

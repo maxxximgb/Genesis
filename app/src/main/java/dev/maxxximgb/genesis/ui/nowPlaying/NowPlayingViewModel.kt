@@ -31,4 +31,9 @@ class NowPlayingViewModel @Inject constructor(
     fun playSingle(track: Track) {
         viewModelScope.launch { controller.playSingle(track) }
     }
+
+    fun playTracks(tracks: List<Track>, startIndex: Int) {
+        if (tracks.isEmpty()) return
+        viewModelScope.launch { controller.playQueue(playlistId = null, tracks = tracks, startIndex = startIndex) }
+    }
 }

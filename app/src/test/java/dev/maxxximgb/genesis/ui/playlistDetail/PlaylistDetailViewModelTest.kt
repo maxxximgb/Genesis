@@ -2,6 +2,8 @@ package dev.maxxximgb.genesis.ui.playlistDetail
 
 import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
+import dev.maxxximgb.genesis.data.playback.PlaybackStateStore
+import dev.maxxximgb.genesis.domain.model.PlaybackState
 import dev.maxxximgb.genesis.domain.model.Playlist
 import dev.maxxximgb.genesis.domain.model.PlaylistDetail
 import dev.maxxximgb.genesis.domain.model.Track
@@ -13,6 +15,7 @@ import dev.maxxximgb.genesis.domain.usecase.playlist.ReorderPlaylistTracksUseCas
 import dev.maxxximgb.genesis.util.MainDispatcherRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -36,6 +39,10 @@ class PlaylistDetailViewModelTest {
 
     private fun savedStateWithPlaylistId(id: Long) = SavedStateHandle(mapOf("playlistId" to id))
 
+    private fun playbackStore(): PlaybackStateStore = mock {
+        on { flow } doReturn flowOf(PlaybackState())
+    }
+
     @Test
     fun emitsContentWhenDetailNonNull() = runTest {
         val detail = PlaylistDetail(
@@ -47,6 +54,7 @@ class PlaylistDetailViewModelTest {
 
         val vm = PlaylistDetailViewModel(
             savedStateWithPlaylistId(7L), observe,
+            playbackStore(),
             mock<AddTracksToPlaylistUseCase>(),
             mock<RemoveTracksFromPlaylistUseCase>(),
             mock<ReorderPlaylistTracksUseCase>(),
@@ -82,6 +90,7 @@ class PlaylistDetailViewModelTest {
         val play = mock<PlayPlaylistUseCase>()
         val vm = PlaylistDetailViewModel(
             savedStateWithPlaylistId(11L), observe,
+            playbackStore(),
             mock<AddTracksToPlaylistUseCase>(),
             mock<RemoveTracksFromPlaylistUseCase>(),
             mock<ReorderPlaylistTracksUseCase>(),
@@ -103,6 +112,7 @@ class PlaylistDetailViewModelTest {
         val reorderUc = mock<ReorderPlaylistTracksUseCase>()
         val vm = PlaylistDetailViewModel(
             savedStateWithPlaylistId(99L), observe,
+            playbackStore(),
             addUc, removeUc, reorderUc, mock<PlayPlaylistUseCase>(),
         )
 

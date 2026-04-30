@@ -14,7 +14,6 @@ import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.PlaylistRemove
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
@@ -36,6 +35,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.maxxximgb.genesis.R
 import dev.maxxximgb.genesis.ui.components.EmptyState
 import dev.maxxximgb.genesis.ui.components.LoadingState
+import dev.maxxximgb.genesis.ui.components.TrackAction
 import dev.maxxximgb.genesis.ui.components.TrackRow
 import dev.maxxximgb.genesis.ui.theme.Elevation
 import dev.maxxximgb.genesis.ui.theme.Spacing
@@ -74,14 +74,6 @@ fun PlaylistDetailScreen(
                             navigationIcon = {
                                 IconButton(onClick = onNavigateBack) {
                                     Icon(Icons.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
-                                }
-                            },
-                            actions = {
-                                IconButton(
-                                    onClick = { viewModel.play(0) },
-                                    enabled = s.detail.tracks.isNotEmpty(),
-                                ) {
-                                    Icon(Icons.Filled.PlayArrow, contentDescription = stringResource(R.string.play))
                                 }
                             },
                         )
@@ -153,6 +145,7 @@ fun PlaylistDetailScreen(
                             subtitle = stringResource(R.string.empty_playlist_subtitle),
                         )
                     } else {
+                        val removeLabel = stringResource(R.string.remove_from_playlist)
                         LazyColumn(modifier = Modifier.fillMaxSize()) {
                             items(
                                 count = tracks.size,
@@ -160,10 +153,22 @@ fun PlaylistDetailScreen(
                             ) { idx ->
                                 val track = tracks[idx]
                                 val selected = track.mediaStoreId in s.selectedIds
+                                val isCurrent = s.currentMediaStoreId != null &&
+                                    track.mediaStoreId == s.currentMediaStoreId
                                 TrackRow(
                                     track = track,
                                     selected = selected,
                                     selectionMode = s.selectionMode,
+                                    isCurrentlyPlaying = isCurrent,
+                                    actions = if (!s.selectionMode) {
+                                        listOf(
+                                            TrackAction(
+                                                icon = Icons.Filled.Delete,
+                                                label = removeLabel,
+                                                onClick = { viewModel.removeOne(track.mediaStoreId) },
+                                            ),
+                                        )
+                                    } else emptyList(),
                                     onClick = {
                                         if (s.selectionMode) viewModel.toggleSelection(track.mediaStoreId)
                                         else viewModel.play(idx)

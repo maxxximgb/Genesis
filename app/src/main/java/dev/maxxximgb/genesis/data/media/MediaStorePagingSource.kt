@@ -11,6 +11,7 @@ class MediaStorePagingSource(
     private val source: MediaStoreSource,
     private val sort: SortOrder,
     private val query: String,
+    private val filter: LibraryFilter = LibraryFilter.None,
 ) : PagingSource<Int, Track>() {
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Track> {
@@ -18,7 +19,7 @@ class MediaStorePagingSource(
         val limit = params.loadSize
         return try {
             val tracks = withContext(Dispatchers.IO) {
-                source.queryTracks(sort, query, limit, offset)
+                source.queryTracks(sort, query, limit, offset, filter)
             }
             LoadResult.Page(
                 data = tracks,

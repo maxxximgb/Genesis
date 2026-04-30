@@ -1,0 +1,14 @@
+package dev.maxxximgb.genesis.domain.usecase.library
+
+import androidx.paging.Pager
+import dev.maxxximgb.genesis.domain.model.SortOrder
+import dev.maxxximgb.genesis.domain.model.Track
+import dev.maxxximgb.genesis.domain.repository.MediaLibraryRepository
+import javax.inject.Inject
+
+class TracksByAlbumUseCase @Inject constructor(
+    private val repository: MediaLibraryRepository,
+) {
+    operator fun invoke(albumId: Long, sort: SortOrder = SortOrder.TITLE_ASC): Pager<Int, Track> =
+        repository.pagedTracksByAlbum(albumId, sort)
+}

@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import dev.maxxximgb.genesis.di.UserPreferences
 import dev.maxxximgb.genesis.domain.model.SortOrder
+import dev.maxxximgb.genesis.ui.library.AlbumsLayout
 import dev.maxxximgb.genesis.ui.theme.PaletteId
 import dev.maxxximgb.genesis.ui.theme.ThemeMode
 import kotlinx.coroutines.flow.Flow
@@ -56,11 +57,24 @@ class UserPreferencesStore @Inject constructor(
         dataStore.edit { it[Keys.FONT_SCALE] = scale }
     }
 
+    fun observeAlbumsLayout(): Flow<AlbumsLayout> = dataStore.data
+        .map { prefs ->
+            prefs[Keys.ALBUMS_LAYOUT]
+                ?.let { runCatching { AlbumsLayout.valueOf(it) }.getOrNull() }
+                ?: AlbumsLayout.LIST
+        }
+        .distinctUntilChanged()
+
+    suspend fun setAlbumsLayout(layout: AlbumsLayout) {
+        dataStore.edit { it[Keys.ALBUMS_LAYOUT] = layout.name }
+    }
+
     private object Keys {
         val LIBRARY_SORT = stringPreferencesKey("library_sort")
         val THEME_MODE = stringPreferencesKey("theme_mode")
         val PALETTE_ID = stringPreferencesKey("palette_id")
         val FONT_SCALE = floatPreferencesKey("font_scale")
+        val ALBUMS_LAYOUT = stringPreferencesKey("albums_layout")
     }
 
     companion object {
