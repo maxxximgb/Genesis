@@ -5,7 +5,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -25,7 +25,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
-import dev.maxxximgb.genesis.ui.components.NavigationSidebar
+import dev.maxxximgb.genesis.ui.components.BottomBar
 import dev.maxxximgb.genesis.ui.components.NowPlayingBar
 import dev.maxxximgb.genesis.ui.components.PermissionGate
 import dev.maxxximgb.genesis.ui.navigation.AppNavHost
@@ -88,7 +88,7 @@ private fun AppRoot(
 
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = backStackEntry?.destination?.route
-    val showSidebar = when {
+    val showBottomBar = when {
         currentRoute == null -> true
         currentRoute.startsWith("playlist/") -> false
         currentRoute.startsWith("album/") -> false
@@ -100,14 +100,10 @@ private fun AppRoot(
         it.route == Routes.PlaylistDetail.pattern
     } == true
 
-    Row(modifier = Modifier.fillMaxSize()) {
-        if (showSidebar && !isPlaylistDetailHierarchy) {
-            NavigationSidebar(navController = navController)
-        }
-        Scaffold(
-            modifier = Modifier.fillMaxSize(),
-            snackbarHost = { SnackbarHost(snackbarHostState) },
-            bottomBar = {
+    Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+        bottomBar = {
+            Column {
                 if (playbackState.title != null) {
                     NowPlayingBar(
                         state = playbackState,
@@ -116,14 +112,17 @@ private fun AppRoot(
                         onNext = nowPlayingViewModel::next,
                     )
                 }
-            },
-        ) { padding ->
-            AppNavHost(
-                navController = navController,
-                snackbarHostState = snackbarHostState,
-                modifier = Modifier.fillMaxSize().padding(padding),
-            )
-        }
+                if (showBottomBar && !isPlaylistDetailHierarchy) {
+                    BottomBar(navController = navController)
+                }
+            }
+        },
+    ) { padding ->
+        AppNavHost(
+            navController = navController,
+            snackbarHostState = snackbarHostState,
+            modifier = Modifier.fillMaxSize().padding(padding),
+        )
     }
 }
 
