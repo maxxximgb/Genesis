@@ -2,11 +2,12 @@
     <string name="app_name">Genesis</string>
 
     <!-- Library / Playlists screens -->
-    <string name="tab_library">Library</string>
+    <string name="tab_library">Media</string>
     <string name="tab_playlists">Playlists</string>
-    <string name="library_title">Library</string>
+    <string name="library_title">Media</string>
     <string name="playlists_title">Playlists</string>
     <string name="search_placeholder">Search by title or artist</string>
+    <string name="search_no_results">Nothing matches your search</string>
     <string name="add_to_playlist">Add to playlist</string>
     <string name="add">Add</string>
     <string name="add_n_tracks">Add %1$d tracks</string>
@@ -17,6 +18,14 @@
     <string name="delete">Delete</string>
     <string name="rename">Rename</string>
     <string name="save">Save</string>
+    <string name="delete_track">Delete from device</string>
+    <string name="rename_track">Rename</string>
+    <string name="delete_track_confirm_title">Delete track?</string>
+    <string name="delete_track_confirm_message">\"%1$s\" will be permanently removed from your device.</string>
+    <string name="rename_track_title">Rename track</string>
+    <string name="rename_track_label">Title</string>
+    <string name="snack_track_deleted">Track deleted</string>
+    <string name="snack_track_renamed">Track renamed</string>
     <string name="play">Play</string>
     <string name="pause">Pause</string>
     <string name="next">Next</string>
@@ -61,6 +70,16 @@
     <!-- Now playing -->
     <string name="now_playing">Now playing</string>
     <string name="not_playing">Nothing playing</string>
+    <string name="now_playing_title">Now Playing</string>
+    <string name="queue_title">Up Next</string>
+    <string name="queue_empty">Nothing else queued</string>
+    <string name="sleep_timer_title">Sleep timer</string>
+    <string name="sleep_timer_off">Cancel timer</string>
+    <string name="sleep_timer_15min">15 min</string>
+    <string name="sleep_timer_30min">30 min</string>
+    <string name="sleep_timer_45min">45 min</string>
+    <string name="sleep_timer_60min">1 hour</string>
+    <string name="sleep_timer_remaining">Stops in %1$s</string>
 
     <!-- Snackbars -->
     <string name="snack_playlist_created">Playlist created</string>
@@ -70,22 +89,43 @@
     <string name="snack_track_added">Track added</string>
     <string name="snack_tracks_removed">%1$d tracks removed</string>
     <string name="snack_track_removed">Track removed</string>
+    <string name="snack_marked_audiobooks">%1$d marked as audiobooks</string>
+    <string name="snack_unmarked_audiobooks">%1$d removed from audiobooks</string>
 
     <!-- Settings -->
     <string name="pref_theme">Theme</string>
     <string name="pref_theme_auto">Follow system</string>
     <string name="pref_theme_light">Light</string>
     <string name="pref_theme_dark">Dark</string>
-    <string name="pref_palette">Palette</string>
     <string name="pref_language">Language</string>
     <string name="pref_language_system">Follow system</string>
     <string name="pref_language_english">English</string>
     <string name="pref_language_russian">Русский</string>
+    <string name="pref_language_spanish">Español</string>
+    <string name="pref_language_chinese">中文</string>
+    <string name="pref_language_german">Deutsch</string>
+    <string name="pref_language_french">Français</string>
+    <string name="pref_language_portuguese">Português</string>
+    <string name="pref_language_japanese">日本語</string>
     <string name="pref_font_scale">Interface size</string>
     <string name="font_scale_small">Small (85%)</string>
     <string name="font_scale_normal">Normal (100%)</string>
     <string name="font_scale_large">Large (115%)</string>
     <string name="font_scale_xlarge">Extra large (130%)</string>
+    <string name="pref_section_audio">Audio</string>
+
+    <!-- Equalizer -->
+    <string name="equalizer_title">Equalizer</string>
+    <string name="equalizer_master">Enable</string>
+    <string name="equalizer_section_presets">Presets</string>
+    <string name="equalizer_section_bands">Bands</string>
+    <string name="equalizer_unsupported">Equalizer is not supported on this device</string>
+    <string name="equalizer_preset_default">Default</string>
+    <string name="equalizer_preset_new">New preset</string>
+    <string name="equalizer_preset_save_title">Save preset</string>
+    <string name="equalizer_preset_rename_title">Rename preset</string>
+    <string name="equalizer_preset_name_hint">Preset name</string>
+    <string name="equalizer_preset_name_duplicate">A preset with this name already exists</string>
 
     <!-- Sort -->
     <string name="sort_by">Sort by</string>
@@ -97,29 +137,26 @@
     <string name="sort_duration_asc">Duration ↑</string>
     <string name="sort_duration_desc">Duration ↓</string>
 
-    <!-- Palettes -->
-    <string name="palette_verdant">Verdant Green</string>
-    <string name="palette_amber">Warm Amber</string>
-    <string name="palette_indigo">Deep Indigo</string>
-    <string name="palette_crimson">Crimson Red</string>
-    <string name="palette_teal">Calm Teal</string>
-    <string name="palette_dynamic">Material You</string>
-
     <!-- Track row -->
     <string name="track_more_actions">More actions</string>
 
     <!-- Library browse tabs -->
     <string name="browse_tracks">Tracks</string>
     <string name="browse_albums">Albums</string>
+    <string name="browse_playlists">Playlists</string>
+    <string name="browse_audiobooks">Audiobooks</string>
     <string name="browse_artists">Artists</string>
     <string name="browse_folders">Folders</string>
+    <string name="empty_audiobooks_title">No audiobooks yet</string>
+    <string name="empty_audiobooks_subtitle">Files tagged as audiobooks on your device will appear here.</string>
+    <string name="mark_as_audiobook">Mark as audiobook</string>
+    <string name="unmark_audiobook">Remove from audiobooks</string>
     <string name="empty_albums_title">No albums yet</string>
     <string name="empty_artists_title">No artists yet</string>
     <string name="empty_folders_title">No folders yet</string>
     <string name="album_track_count">%1$d tracks</string>
     <string name="artist_track_count">%1$d tracks · %2$d albums</string>
     <string name="folder_track_count">%1$d tracks</string>
-    <string name="unknown_artist">Unknown artist</string>
     <string name="recent_searches">Recent searches</string>
     <string name="remove_recent_search">Remove from history</string>
     <string name="toggle_layout">Toggle layout</string>
@@ -128,9 +165,14 @@
     <string name="widget_label">Genesis playlist</string>
     <string name="widget_description">Pin a playlist to your home screen.</string>
     <string name="widget_choose_playlist">Choose a playlist</string>
+    <string name="widget_choose_target">Choose a target</string>
     <string name="widget_no_playlists_empty">No playlists yet. Create one in Genesis first.</string>
+    <string name="widget_no_targets_empty">No playlists or audiobooks yet. Add some in Genesis first.</string>
+    <string name="widget_target_audiobooks">All audiobooks</string>
+    <string name="widget_audiobook_count_fmt">%1$d tracks</string>
+    <string name="widget_audiobook_empty">No audiobooks yet</string>
     <string name="widget_unbound_title">Widget not configured</string>
-    <string name="widget_unbound_subtitle">Tap to choose a playlist</string>
+    <string name="widget_unbound_subtitle">Tap to choose a target</string>
     <string name="widget_missing_playlist_title">Playlist removed</string>
     <string name="widget_missing_playlist_subtitle">Tap to reconfigure</string>
     <string name="widget_empty_playlist_subtitle">Playlist is empty</string>
@@ -139,6 +181,11 @@
     <string name="widget_bg_label">Background</string>
     <string name="widget_bg_dark">Dark</string>
     <string name="widget_bg_light">Light</string>
+    <string name="add_to_queue">Add to queue</string>
+    <string name="snack_added_to_queue">%1$d tracks added to queue</string>
+    <string name="enqueue_tracks_picker_stub">Track picker coming soon — pick a playlist or album for now</string>
+    <string name="cd_drag_to_reorder">Drag to reorder</string>
+    <string name="reorder_tracks">Reorder tracks</string>
     <string name="cd_loop_off">Loop: off</string>
     <string name="cd_loop_all">Loop: repeat all</string>
     <string name="cd_loop_one">Loop: repeat one</string>

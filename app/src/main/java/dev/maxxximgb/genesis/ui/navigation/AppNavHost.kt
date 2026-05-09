@@ -3,6 +3,8 @@ package dev.maxxximgb.genesis.ui.navigation
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -11,14 +13,16 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import dev.maxxximgb.genesis.ui.equalizer.EqualizerScreen
 import dev.maxxximgb.genesis.ui.library.AlbumDetailScreen
-import dev.maxxximgb.genesis.ui.library.ArtistDetailScreen
-import dev.maxxximgb.genesis.ui.library.FolderDetailScreen
 import dev.maxxximgb.genesis.ui.library.LibraryScreen
+import dev.maxxximgb.genesis.ui.nowPlaying.FullNowPlayingScreen
 import dev.maxxximgb.genesis.ui.playlistDetail.PlaylistDetailScreen
-import dev.maxxximgb.genesis.ui.playlists.PlaylistsScreen
+import dev.maxxximgb.genesis.ui.search.SearchScreen
+import dev.maxxximgb.genesis.ui.settings.SettingsScreen
 
 private const val NAV_ANIM_DURATION_MS = 200
+private const val NOW_PLAYING_SLIDE_MS = 250
 
 @Composable
 fun AppNavHost(
@@ -52,14 +56,26 @@ fun AppNavHost(
                 snackbarHostState = snackbarHostState,
                 onNavigateBack = { navController.popBackStack() },
                 onNavigateToAlbum = { navController.navigate(Routes.AlbumDetail.forId(it)) },
-                onNavigateToArtist = { navController.navigate(Routes.ArtistDetail.forId(it)) },
-                onNavigateToFolder = { navController.navigate(Routes.FolderDetail.forId(it)) },
+                onNavigateToPlaylist = { navController.navigate(Routes.PlaylistDetail.forId(it)) },
+                onNavigateToSearch = { navController.navigate(Routes.Search.path) },
+                onNavigateToSettings = { navController.navigate(Routes.Settings.path) },
             )
         }
-        composable(Routes.Playlists.path) {
-            PlaylistsScreen(
+        composable(Routes.Search.path) {
+            SearchScreen(
+                onNavigateBack = { navController.popBackStack() },
                 snackbarHostState = snackbarHostState,
-                onPlaylistClick = { navController.navigate(Routes.PlaylistDetail.forId(it)) },
+            )
+        }
+        composable(Routes.Settings.path) {
+            SettingsScreen(
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToEqualizer = { navController.navigate(Routes.Equalizer.path) },
+            )
+        }
+        composable(Routes.Equalizer.path) {
+            EqualizerScreen(
+                onNavigateBack = { navController.popBackStack() },
             )
         }
         composable(
@@ -88,25 +104,25 @@ fun AppNavHost(
             )
         }
         composable(
-            route = Routes.ArtistDetail.pattern,
-            arguments = listOf(
-                navArgument(Routes.ArtistDetail.ARG_ARTIST_ID) { type = NavType.LongType },
-            ),
+            route = Routes.NowPlaying.path,
+            enterTransition = {
+                slideInVertically(
+                    initialOffsetY = { it },
+                    animationSpec = tween(NOW_PLAYING_SLIDE_MS),
+                )
+            },
+            exitTransition = { fadeOut(animationSpec = tween(NAV_ANIM_DURATION_MS)) },
+            popEnterTransition = { fadeIn(animationSpec = tween(NAV_ANIM_DURATION_MS)) },
+            popExitTransition = {
+                slideOutVertically(
+                    targetOffsetY = { it },
+                    animationSpec = tween(NOW_PLAYING_SLIDE_MS),
+                )
+            },
         ) {
-            ArtistDetailScreen(
+            FullNowPlayingScreen(
                 onNavigateBack = { navController.popBackStack() },
-                snackbarHostState = snackbarHostState,
-            )
-        }
-        composable(
-            route = Routes.FolderDetail.pattern,
-            arguments = listOf(
-                navArgument(Routes.FolderDetail.ARG_BUCKET_ID) { type = NavType.LongType },
-            ),
-        ) {
-            FolderDetailScreen(
-                onNavigateBack = { navController.popBackStack() },
-                snackbarHostState = snackbarHostState,
+                onNavigateToEqualizer = { navController.navigate(Routes.Equalizer.path) },
             )
         }
     }

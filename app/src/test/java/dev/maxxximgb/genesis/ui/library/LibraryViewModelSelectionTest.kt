@@ -16,7 +16,10 @@ import dev.maxxximgb.genesis.domain.usecase.library.ObserveAlbumsUseCase
 import dev.maxxximgb.genesis.domain.usecase.library.ObserveArtistsUseCase
 import dev.maxxximgb.genesis.domain.usecase.library.ObserveFoldersUseCase
 import dev.maxxximgb.genesis.domain.usecase.library.SearchLibraryUseCase
+import dev.maxxximgb.genesis.domain.repository.MediaLibraryRepository
 import dev.maxxximgb.genesis.domain.usecase.playlist.AddTracksToPlaylistUseCase
+import dev.maxxximgb.genesis.domain.usecase.playlist.GetPlaylistTracksUseCase
+import dev.maxxximgb.genesis.domain.usecase.playlist.ObservePlaylistSummariesUseCase
 import dev.maxxximgb.genesis.domain.usecase.playlist.ObservePlaylistsUseCase
 import dev.maxxximgb.genesis.util.MainDispatcherRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -29,6 +32,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
@@ -54,16 +58,29 @@ class LibraryViewModelSelectionTest {
 
     private fun makeVm(
         addUc: AddTracksToPlaylistUseCase = mock(),
+        tracksById: Map<Long, Track> = emptyMap(),
     ): LibraryViewModel {
         val sortFlow = MutableStateFlow(SortOrder.DATE_ADDED_DESC)
         val prefs = mock<UserPreferencesStore> {
             on { observeLibrarySort() } doReturn sortFlow
             on { observeAlbumsLayout() } doReturn flowOf(AlbumsLayout.LIST)
+            on { observeAudiobookOverrides() } doReturn flowOf(emptySet())
         }
         val pager = emptyPager()
         val search = mock<SearchLibraryUseCase> { on { invoke(any(), any()) } doReturn pager }
         val observePlaylists = mock<ObservePlaylistsUseCase> {
             on { invoke() } doReturn flowOf(emptyList())
+        }
+        val observePlaylistSummaries = mock<ObservePlaylistSummariesUseCase> {
+            on { invoke() } doReturn flowOf(emptyList())
+        }
+        val mediaRepo = mock<MediaLibraryRepository> {
+            on { pagedAudiobooks(any(), any()) } doReturn pager
+            onBlocking { getTracksByIds(any()) } doAnswer { inv ->
+                @Suppress("UNCHECKED_CAST")
+                val ids = inv.arguments[0] as List<Long>
+                ids.mapNotNull { tracksById[it] }
+            }
         }
         val playback = mock<PlaybackStateStore> { on { flow } doReturn flowOf(PlaybackState()) }
         val searchHistory = mock<SearchHistoryStore> { on { observeRecent() } doReturn flowOf(emptyList()) }
@@ -71,8 +88,9 @@ class LibraryViewModelSelectionTest {
         val observeArtists = mock<ObserveArtistsUseCase> { on { invoke() } doReturn flowOf(emptyList()) }
         val observeFolders = mock<ObserveFoldersUseCase> { on { invoke() } doReturn flowOf(emptyList()) }
         return LibraryViewModel(
-            search, prefs, addUc, mock(), searchHistory, playback,
-            observePlaylists, observeAlbums, observeArtists, observeFolders,
+            search, prefs, addUc, mock(), mock(), mock(), mock<GetPlaylistTracksUseCase>(),
+            searchHistory, mediaRepo, SelectionStateHolder(),
+            mock(), playback, observePlaylists, observePlaylistSummaries, observeAlbums, observeArtists, observeFolders,
         )
     }
 
@@ -117,9 +135,12 @@ class LibraryViewModelSelectionTest {
     @Test
     fun addSelectedDelegatesToUseCaseAndClears() = runTest {
         val addUc = mock<AddTracksToPlaylistUseCase>()
-        val vm = makeVm(addUc = addUc)
-
         val tracks = listOf(track(10L), track(20L))
+        val vm = makeVm(
+            addUc = addUc,
+            tracksById = tracks.associateBy { it.mediaStoreId },
+        )
+
         tracks.forEach { vm.toggleSelection(it) }
 
         val added = vm.addSelectedToPlaylist(playlistId = 5L)

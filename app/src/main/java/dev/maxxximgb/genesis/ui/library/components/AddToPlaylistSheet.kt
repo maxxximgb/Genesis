@@ -36,12 +36,6 @@ fun AddToPlaylistSheet(
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     ModalBottomSheet(onDismissRequest = onDismiss, sheetState = sheetState) {
         Column(modifier = Modifier.fillMaxWidth().padding(Spacing.lg)) {
-            Text(
-                text = stringResource(R.string.add_to_playlist),
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier.padding(bottom = Spacing.md),
-            )
             CreateNewRow(onClick = onCreateNew)
             if (playlists.isNotEmpty()) {
                 HorizontalDivider(modifier = Modifier.padding(vertical = Spacing.sm))

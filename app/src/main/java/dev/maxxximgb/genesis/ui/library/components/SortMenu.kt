@@ -13,7 +13,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.layout.size
 import dev.maxxximgb.genesis.R
 import dev.maxxximgb.genesis.domain.model.SortOrder
 
@@ -32,8 +35,12 @@ fun SortMenu(
         SortOrder.DURATION_ASC to R.string.sort_duration_asc,
         SortOrder.DURATION_DESC to R.string.sort_duration_desc,
     )
-    IconButton(onClick = { expanded = true }) {
-        Icon(Icons.Filled.Sort, contentDescription = stringResource(R.string.sort_by))
+    IconButton(onClick = { expanded = true }, modifier = Modifier.size(36.dp)) {
+        Icon(
+            Icons.Filled.Sort,
+            contentDescription = stringResource(R.string.sort_by),
+            modifier = Modifier.size(20.dp),
+        )
     }
     DropdownMenu(
         expanded = expanded,

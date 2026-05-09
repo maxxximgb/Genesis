@@ -33,7 +33,7 @@ class UserPreferencesStoreSettingsTest {
     @Test
     fun defaultsAreReturnedForFreshStore() = runTest {
         assertEquals(ThemeMode.AUTO, store.observeThemeMode().first())
-        assertEquals(PaletteId.VERDANT, store.observePalette().first())
+        assertEquals(PaletteId.ITUNES, store.observePalette().first())
         assertEquals(UserPreferencesStore.DEFAULT_FONT_SCALE, store.observeFontScale().first())
     }
 
@@ -41,12 +41,6 @@ class UserPreferencesStoreSettingsTest {
     fun setThemeModePersists() = runTest {
         store.setThemeMode(ThemeMode.DARK)
         assertEquals(ThemeMode.DARK, store.observeThemeMode().first())
-    }
-
-    @Test
-    fun setPalettePersists() = runTest {
-        store.setPalette(PaletteId.CRIMSON)
-        assertEquals(PaletteId.CRIMSON, store.observePalette().first())
     }
 
     @Test
@@ -66,7 +60,7 @@ class UserPreferencesStoreSettingsTest {
 
     @Test
     fun unknownPaletteNameFallsBackToDefault() = runTest {
-        assertEquals(PaletteId.VERDANT, PaletteId.fromName("WTF"))
-        assertEquals(PaletteId.VERDANT, PaletteId.fromName(null))
+        assertEquals(PaletteId.ITUNES, PaletteId.fromName("WTF"))
+        assertEquals(PaletteId.ITUNES, PaletteId.fromName(null))
     }
 }

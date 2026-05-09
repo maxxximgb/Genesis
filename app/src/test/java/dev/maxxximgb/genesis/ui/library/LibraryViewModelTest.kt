@@ -15,9 +15,15 @@ import dev.maxxximgb.genesis.domain.usecase.library.ObserveAlbumsUseCase
 import dev.maxxximgb.genesis.domain.usecase.library.ObserveArtistsUseCase
 import dev.maxxximgb.genesis.domain.usecase.library.ObserveFoldersUseCase
 import dev.maxxximgb.genesis.domain.usecase.library.SearchLibraryUseCase
+import dev.maxxximgb.genesis.domain.playback.PlaybackController
 import dev.maxxximgb.genesis.domain.usecase.playlist.AddTracksToPlaylistUseCase
 import dev.maxxximgb.genesis.domain.usecase.playlist.CreatePlaylistUseCase
+import dev.maxxximgb.genesis.domain.usecase.playlist.DeletePlaylistUseCase
+import dev.maxxximgb.genesis.domain.usecase.playlist.GetPlaylistTracksUseCase
+import dev.maxxximgb.genesis.domain.repository.MediaLibraryRepository
+import dev.maxxximgb.genesis.domain.usecase.playlist.ObservePlaylistSummariesUseCase
 import dev.maxxximgb.genesis.domain.usecase.playlist.ObservePlaylistsUseCase
+import dev.maxxximgb.genesis.domain.usecase.playlist.RenamePlaylistUseCase
 import dev.maxxximgb.genesis.util.MainDispatcherRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -54,6 +60,7 @@ class LibraryViewModelTest {
         val prefs = mock<UserPreferencesStore> {
             on { observeLibrarySort() } doReturn sortFlow
             on { observeAlbumsLayout() } doReturn kotlinx.coroutines.flow.flowOf(AlbumsLayout.LIST)
+            on { observeAudiobookOverrides() } doReturn kotlinx.coroutines.flow.flowOf(emptySet())
         }
         val pager = emptyPager()
         val searchUseCase = mock<SearchLibraryUseCase> {
@@ -64,13 +71,24 @@ class LibraryViewModelTest {
             prefs,
             mock<AddTracksToPlaylistUseCase>(),
             mock<CreatePlaylistUseCase>(),
+            mock<RenamePlaylistUseCase>(),
+            mock<DeletePlaylistUseCase>(),
+            mock<GetPlaylistTracksUseCase>(),
             mock<SearchHistoryStore> {
                 on { observeRecent() } doReturn kotlinx.coroutines.flow.flowOf(emptyList())
             },
+            mock<MediaLibraryRepository> {
+                on { pagedAudiobooks(any(), any()) } doReturn pager
+            },
+            SelectionStateHolder(),
+            mock<PlaybackController>(),
             mock<PlaybackStateStore> {
                 on { flow } doReturn kotlinx.coroutines.flow.flowOf(PlaybackState())
             },
             mock<ObservePlaylistsUseCase> {
+                on { invoke() } doReturn kotlinx.coroutines.flow.flowOf(emptyList())
+            },
+            mock<ObservePlaylistSummariesUseCase> {
                 on { invoke() } doReturn kotlinx.coroutines.flow.flowOf(emptyList())
             },
             mock<ObserveAlbumsUseCase> {
@@ -103,6 +121,7 @@ class LibraryViewModelTest {
         val prefs = mock<UserPreferencesStore> {
             on { observeLibrarySort() } doReturn sortFlow
             on { observeAlbumsLayout() } doReturn kotlinx.coroutines.flow.flowOf(AlbumsLayout.LIST)
+            on { observeAudiobookOverrides() } doReturn kotlinx.coroutines.flow.flowOf(emptySet())
         }
         val pager = emptyPager()
         val searchUseCase = mock<SearchLibraryUseCase> {
@@ -113,13 +132,24 @@ class LibraryViewModelTest {
             prefs,
             mock<AddTracksToPlaylistUseCase>(),
             mock<CreatePlaylistUseCase>(),
+            mock<RenamePlaylistUseCase>(),
+            mock<DeletePlaylistUseCase>(),
+            mock<GetPlaylistTracksUseCase>(),
             mock<SearchHistoryStore> {
                 on { observeRecent() } doReturn kotlinx.coroutines.flow.flowOf(emptyList())
             },
+            mock<MediaLibraryRepository> {
+                on { pagedAudiobooks(any(), any()) } doReturn pager
+            },
+            SelectionStateHolder(),
+            mock<PlaybackController>(),
             mock<PlaybackStateStore> {
                 on { flow } doReturn kotlinx.coroutines.flow.flowOf(PlaybackState())
             },
             mock<ObservePlaylistsUseCase> {
+                on { invoke() } doReturn kotlinx.coroutines.flow.flowOf(emptyList())
+            },
+            mock<ObservePlaylistSummariesUseCase> {
                 on { invoke() } doReturn kotlinx.coroutines.flow.flowOf(emptyList())
             },
             mock<ObserveAlbumsUseCase> {

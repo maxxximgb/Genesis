@@ -1,0 +1,193 @@
+<resources>
+    <string name="app_name">Genesis</string>
+
+    <!-- Library / Playlists screens -->
+    <string name="tab_library">Mídia</string>
+    <string name="tab_playlists">Playlists</string>
+    <string name="library_title">Mídia</string>
+    <string name="playlists_title">Playlists</string>
+    <string name="search_placeholder">Pesquisar por título ou artista</string>
+    <string name="search_no_results">Nenhum resultado</string>
+    <string name="add_to_playlist">Adicionar à playlist</string>
+    <string name="add">Adicionar</string>
+    <string name="add_n_tracks">Adicionar %1$d faixas</string>
+    <string name="add_tracks">Adicionar faixas</string>
+    <string name="cancel">Cancelar</string>
+    <string name="close">Fechar</string>
+    <string name="confirm">Confirmar</string>
+    <string name="delete">Excluir</string>
+    <string name="rename">Renomear</string>
+    <string name="delete_track">Excluir do dispositivo</string>
+    <string name="rename_track">Renomear</string>
+    <string name="delete_track_confirm_title">Excluir faixa?</string>
+    <string name="delete_track_confirm_message">\"%1$s\" será removida permanentemente do dispositivo.</string>
+    <string name="rename_track_title">Renomear faixa</string>
+    <string name="rename_track_label">Título</string>
+    <string name="snack_track_deleted">Faixa excluída</string>
+    <string name="snack_track_renamed">Faixa renomeada</string>
+    <string name="save">Salvar</string>
+    <string name="play">Reproduzir</string>
+    <string name="pause">Pausar</string>
+    <string name="next">Próxima</string>
+    <string name="previous">Anterior</string>
+    <string name="settings">Configurações</string>
+    <string name="back">Voltar</string>
+    <string name="more">Mais</string>
+
+    <!-- Selection -->
+    <string name="selected_count">%1$d selecionados</string>
+    <string name="move_up">Mover para cima</string>
+    <string name="move_down">Mover para baixo</string>
+    <string name="remove_from_playlist">Remover</string>
+
+    <!-- Empty / loading / error -->
+    <string name="empty_library_title">Nenhuma faixa ainda</string>
+    <string name="empty_library_subtitle">Adicione músicas ao seu dispositivo e elas aparecerão aqui.</string>
+    <string name="empty_search_title">Nada encontrado</string>
+    <string name="empty_search_subtitle">Tente alterar a pesquisa.</string>
+    <string name="empty_playlists_title">Nenhuma playlist ainda</string>
+    <string name="empty_playlists_subtitle">Crie sua primeira playlist com o botão abaixo.</string>
+    <string name="empty_playlist_title">Esta playlist está vazia</string>
+    <string name="empty_playlist_subtitle">Adicione faixas pela tela de Mídia.</string>
+    <string name="error_unknown">Algo deu errado</string>
+    <string name="retry">Tentar novamente</string>
+
+    <!-- Permission -->
+    <string name="permission_title">Acesso ao áudio necessário</string>
+    <string name="permission_message">O Genesis precisa acessar seus arquivos de áudio para mostrar sua biblioteca e tocar música.</string>
+    <string name="permission_grant">Conceder acesso</string>
+    <string name="permission_open_settings">Abrir Configurações</string>
+    <string name="permission_permanently_denied">O acesso foi negado permanentemente. Abra as Configurações para conceder a permissão.</string>
+
+    <!-- Playlist dialogs -->
+    <string name="new_playlist">Nova playlist</string>
+    <string name="rename_playlist">Renomear playlist</string>
+    <string name="delete_playlist_title">Excluir playlist?</string>
+    <string name="delete_playlist_message">A playlist será removida. As faixas no seu dispositivo não serão excluídas.</string>
+    <string name="playlist_name_hint">Nome da playlist</string>
+    <string name="track_count">%1$d faixas</string>
+
+    <!-- Now playing -->
+    <string name="now_playing">Tocando agora</string>
+    <string name="not_playing">Nada tocando</string>
+    <string name="now_playing_title">Tocando agora</string>
+    <string name="queue_title">A seguir</string>
+    <string name="queue_empty">Nada mais na fila</string>
+    <string name="sleep_timer_title">Timer de sono</string>
+    <string name="sleep_timer_off">Cancelar timer</string>
+    <string name="sleep_timer_15min">15 min</string>
+    <string name="sleep_timer_30min">30 min</string>
+    <string name="sleep_timer_45min">45 min</string>
+    <string name="sleep_timer_60min">1 hora</string>
+    <string name="sleep_timer_remaining">Para em %1$s</string>
+
+    <!-- Snackbars -->
+    <string name="snack_playlist_created">Playlist criada</string>
+    <string name="snack_playlist_renamed">Playlist renomeada</string>
+    <string name="snack_playlist_deleted">Playlist excluída</string>
+    <string name="snack_tracks_added">%1$d faixas adicionadas</string>
+    <string name="snack_track_added">Faixa adicionada</string>
+    <string name="snack_tracks_removed">%1$d faixas removidas</string>
+    <string name="snack_track_removed">Faixa removida</string>
+    <string name="snack_marked_audiobooks">%1$d marcadas como audiolivros</string>
+    <string name="snack_unmarked_audiobooks">%1$d removidas dos audiolivros</string>
+
+    <!-- Settings -->
+    <string name="pref_theme">Tema</string>
+    <string name="pref_theme_auto">Seguir o sistema</string>
+    <string name="pref_theme_light">Claro</string>
+    <string name="pref_theme_dark">Escuro</string>
+    <string name="pref_language">Idioma</string>
+    <string name="pref_language_system">Seguir o sistema</string>
+    <string name="pref_language_english">English</string>
+    <string name="pref_language_russian">Русский</string>
+    <string name="pref_language_spanish">Español</string>
+    <string name="pref_language_chinese">中文</string>
+    <string name="pref_language_german">Deutsch</string>
+    <string name="pref_language_french">Français</string>
+    <string name="pref_language_portuguese">Português</string>
+    <string name="pref_language_japanese">日本語</string>
+    <string name="pref_font_scale">Tamanho da interface</string>
+    <string name="font_scale_small">Pequeno (85%)</string>
+    <string name="font_scale_normal">Normal (100%)</string>
+    <string name="font_scale_large">Grande (115%)</string>
+    <string name="font_scale_xlarge">Muito grande (130%)</string>
+    <string name="pref_section_audio">Áudio</string>
+
+    <!-- Equalizer -->
+    <string name="equalizer_title">Equalizador</string>
+    <string name="equalizer_master">Ativar</string>
+    <string name="equalizer_section_presets">Predefinições</string>
+    <string name="equalizer_section_bands">Faixas</string>
+    <string name="equalizer_unsupported">O equalizador não é suportado neste dispositivo</string>
+    <string name="equalizer_preset_default">Padrão</string>
+    <string name="equalizer_preset_new">Nova predefinição</string>
+    <string name="equalizer_preset_save_title">Salvar predefinição</string>
+    <string name="equalizer_preset_rename_title">Renomear predefinição</string>
+    <string name="equalizer_preset_name_hint">Nome da predefinição</string>
+    <string name="equalizer_preset_name_duplicate">Já existe uma predefinição com este nome</string>
+
+    <!-- Sort -->
+    <string name="sort_by">Ordenar por</string>
+    <string name="sort_date_added_desc">Adicionadas recentemente</string>
+    <string name="sort_title_asc">Título A→Z</string>
+    <string name="sort_title_desc">Título Z→A</string>
+    <string name="sort_artist_asc">Artista A→Z</string>
+    <string name="sort_album_asc">Álbum A→Z</string>
+    <string name="sort_duration_asc">Duração ↑</string>
+    <string name="sort_duration_desc">Duração ↓</string>
+
+    <!-- Track row -->
+    <string name="track_more_actions">Mais ações</string>
+
+    <!-- Library browse tabs -->
+    <string name="browse_tracks">Faixas</string>
+    <string name="browse_albums">Álbuns</string>
+    <string name="browse_playlists">Playlists</string>
+    <string name="browse_audiobooks">Audiolivros</string>
+    <string name="browse_artists">Artistas</string>
+    <string name="browse_folders">Pastas</string>
+    <string name="empty_audiobooks_title">Nenhum audiolivro ainda</string>
+    <string name="empty_audiobooks_subtitle">Arquivos marcados como audiolivros aparecerão aqui.</string>
+    <string name="mark_as_audiobook">Marcar como audiolivro</string>
+    <string name="unmark_audiobook">Remover dos audiolivros</string>
+    <string name="empty_albums_title">Nenhum álbum ainda</string>
+    <string name="empty_artists_title">Nenhum artista ainda</string>
+    <string name="empty_folders_title">Nenhuma pasta ainda</string>
+    <string name="album_track_count">%1$d faixas</string>
+    <string name="artist_track_count">%1$d faixas · %2$d álbuns</string>
+    <string name="folder_track_count">%1$d faixas</string>
+    <string name="recent_searches">Pesquisas recentes</string>
+    <string name="remove_recent_search">Remover do histórico</string>
+    <string name="toggle_layout">Alternar visualização</string>
+
+    <!-- Widget -->
+    <string name="widget_label">Playlist do Genesis</string>
+    <string name="widget_description">Fixe uma playlist na tela inicial.</string>
+    <string name="widget_choose_playlist">Escolha uma playlist</string>
+    <string name="widget_choose_target">Escolha uma fonte</string>
+    <string name="widget_no_playlists_empty">Nenhuma playlist ainda. Crie uma no Genesis primeiro.</string>
+    <string name="widget_no_targets_empty">Nenhuma playlist ou audiolivro ainda. Adicione no Genesis primeiro.</string>
+    <string name="widget_target_audiobooks">Todos os audiolivros</string>
+    <string name="widget_audiobook_count_fmt">%1$d faixas</string>
+    <string name="widget_audiobook_empty">Nenhum audiolivro ainda</string>
+    <string name="widget_unbound_title">Widget não configurado</string>
+    <string name="widget_unbound_subtitle">Toque para escolher uma fonte</string>
+    <string name="widget_missing_playlist_title">Playlist removida</string>
+    <string name="widget_missing_playlist_subtitle">Toque para reconfigurar</string>
+    <string name="widget_empty_playlist_subtitle">A playlist está vazia</string>
+    <string name="widget_play_playlist">Reproduzir playlist</string>
+    <string name="widget_foreign_subtitle">Toque para reproduzir</string>
+    <string name="widget_bg_label">Plano de fundo</string>
+    <string name="widget_bg_dark">Escuro</string>
+    <string name="widget_bg_light">Claro</string>
+    <string name="add_to_queue">Adicionar à fila</string>
+    <string name="snack_added_to_queue">%1$d faixas adicionadas à fila</string>
+    <string name="enqueue_tracks_picker_stub">Seletor de faixas em breve — por enquanto, escolha uma playlist ou álbum</string>
+    <string name="cd_drag_to_reorder">Arraste para reordenar</string>
+    <string name="reorder_tracks">Reordenar faixas</string>
+    <string name="cd_loop_off">Repetição: desativada</string>
+    <string name="cd_loop_all">Repetição: tudo</string>
+    <string name="cd_loop_one">Repetição: uma</string>
+    <string name="cd_shuffle">Aleatório</string>
+</resources>

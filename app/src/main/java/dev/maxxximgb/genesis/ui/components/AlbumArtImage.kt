@@ -2,10 +2,11 @@ package dev.maxxximgb.genesis.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MusicNote
+import androidx.compose.material.icons.outlined.MusicNote
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -29,6 +30,8 @@ fun AlbumArtImage(
     contentDescription: String?,
     modifier: Modifier = Modifier,
     size: Dp = Sizes.albumArtSmall,
+    /** Fraction of the tile filled by the music-note placeholder when art is missing. */
+    placeholderFraction: Float = 0.5f,
 ) {
     val shape = RoundedCornerShape(Corner.sm)
     val context = LocalContext.current
@@ -39,6 +42,10 @@ fun AlbumArtImage(
             .background(MaterialTheme.colorScheme.surfaceVariant),
         contentAlignment = Alignment.Center,
     ) {
+        // Placeholder lives in the outer Box's centered slot so its `size()` modifier
+        // actually constrains it. SubcomposeAsyncImage forces fillMaxSize on its content
+        // slot, which would otherwise stretch the placeholder to the full tile.
+        PlaceholderIcon(fraction = placeholderFraction)
         if (albumId != null) {
             SubcomposeAsyncImage(
                 model = ImageRequest.Builder(context)
@@ -49,22 +56,30 @@ fun AlbumArtImage(
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.size(size),
             ) {
-                when (painter.state) {
-                    is AsyncImagePainter.State.Success -> SubcomposeAsyncImageContent()
-                    else -> PlaceholderIcon()
+                if (painter.state is AsyncImagePainter.State.Success) {
+                    SubcomposeAsyncImageContent()
                 }
             }
-        } else {
-            PlaceholderIcon()
         }
     }
 }
 
 @Composable
-private fun PlaceholderIcon() {
-    Icon(
-        imageVector = Icons.Filled.MusicNote,
-        contentDescription = null,
-        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-    )
+private fun PlaceholderIcon(fraction: Float) {
+    // Proportional sizing: a wrapper Box claims [fraction] of the tile (fillMaxSize sets
+    // both min and max), then the inner Icon fills that Box. We can't apply
+    // fillMaxSize(fraction) directly to Icon — its internal paint() modifier prefers the
+    // painter's intrinsic 24dp size and ignores the fraction unless the surrounding layout
+    // forces a fixed box.
+    Box(
+        modifier = Modifier.fillMaxSize(fraction),
+        contentAlignment = Alignment.Center,
+    ) {
+        Icon(
+            imageVector = Icons.Outlined.MusicNote,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.fillMaxSize(),
+        )
+    }
 }

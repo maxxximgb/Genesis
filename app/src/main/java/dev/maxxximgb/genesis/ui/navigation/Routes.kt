@@ -42,4 +42,20 @@ object Routes {
 
         fun forId(bucketId: Long): String = "folder/$bucketId"
     }
+
+    object NowPlaying {
+        const val path = "nowplaying"
+    }
+
+    object Search {
+        const val path = "search"
+    }
+
+    object Settings {
+        const val path = "settings"
+    }
+
+    object Equalizer {
+        const val path = "equalizer"
+    }
 }

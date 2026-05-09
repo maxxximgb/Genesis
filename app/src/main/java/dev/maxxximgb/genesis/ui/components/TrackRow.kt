@@ -1,12 +1,21 @@
 package dev.maxxximgb.genesis.ui.components
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandHorizontally
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkHorizontally
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -41,7 +50,10 @@ import androidx.compose.ui.unit.dp
 import dev.maxxximgb.genesis.R
 import dev.maxxximgb.genesis.domain.model.Track
 import dev.maxxximgb.genesis.ui.theme.Spacing
+import dev.maxxximgb.genesis.ui.util.formatDuration
 import kotlinx.coroutines.launch
+
+private const val CHECKBOX_ANIM_MS = 220
 
 data class TrackAction(
     val icon: ImageVector,
@@ -57,6 +69,12 @@ fun TrackRow(
     selected: Boolean = false,
     selectionMode: Boolean = false,
     isCurrentlyPlaying: Boolean = false,
+    /**
+     * When false, the leading 3dp now-playing accent strip is omitted. PlaylistDetailScreen
+     * relocates the accent to the far-left of the row (outside the drag handle), so it
+     * disables the built-in one to avoid duplication.
+     */
+    showNowPlayingAccent: Boolean = true,
     actions: List<TrackAction> = emptyList(),
     onClick: () -> Unit = {},
     onLongClick: () -> Unit = {},
@@ -75,7 +93,7 @@ fun TrackRow(
         color = backgroundColor,
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            NowPlayingAccent(visible = isCurrentlyPlaying)
+            if (showNowPlayingAccent) NowPlayingAccent(visible = isCurrentlyPlaying)
             Row(
                 modifier = Modifier
                     .weight(1f)
@@ -83,27 +101,53 @@ fun TrackRow(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
             ) {
-                if (selectionMode) {
+                AnimatedVisibility(
+                    visible = selectionMode,
+                    enter = slideInHorizontally(tween(CHECKBOX_ANIM_MS)) { -it } +
+                        expandHorizontally(tween(CHECKBOX_ANIM_MS)) +
+                        fadeIn(tween(CHECKBOX_ANIM_MS)),
+                    exit = slideOutHorizontally(tween(CHECKBOX_ANIM_MS)) { -it } +
+                        shrinkHorizontally(tween(CHECKBOX_ANIM_MS)) +
+                        fadeOut(tween(CHECKBOX_ANIM_MS)),
+                ) {
                     Checkbox(checked = selected, onCheckedChange = { onClick() })
                 }
                 AlbumArtImage(albumId = track.albumId, contentDescription = null)
-                Column(modifier = Modifier.weight(1f)) {
+                // Crossfade the title text on rename so the change reads as a smooth
+                // morph rather than a jump-cut. Keyed on the title string itself —
+                // when it changes, the new value fades in over the old one.
+                AnimatedContent(
+                    targetState = track.title,
+                    transitionSpec = {
+                        fadeIn(tween(200)) togetherWith fadeOut(tween(200))
+                    },
+                    label = "trackTitle",
+                    modifier = Modifier.weight(1f),
+                ) { title ->
                     Text(
-                        text = track.title,
+                        text = title,
                         style = MaterialTheme.typography.bodyMedium,
                         color = primaryTextColor,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                     )
+                }
+                if (track.durationMs > 0L) {
                     Text(
-                        text = trackSubtitle(track),
-                        style = MaterialTheme.typography.bodySmall,
+                        text = formatDuration(track.durationMs),
+                        style = MaterialTheme.typography.labelSmall,
                         color = secondaryTextColor,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
                     )
                 }
-                if (actions.isNotEmpty() && !selectionMode) {
+                AnimatedVisibility(
+                    visible = actions.isNotEmpty() && !selectionMode,
+                    enter = slideInHorizontally(tween(CHECKBOX_ANIM_MS)) { it } +
+                        expandHorizontally(tween(CHECKBOX_ANIM_MS)) +
+                        fadeIn(tween(CHECKBOX_ANIM_MS)),
+                    exit = slideOutHorizontally(tween(CHECKBOX_ANIM_MS)) { it } +
+                        shrinkHorizontally(tween(CHECKBOX_ANIM_MS)) +
+                        fadeOut(tween(CHECKBOX_ANIM_MS)),
+                ) {
                     TrackOverflowMenu(actions = actions)
                 }
             }

@@ -1,0 +1,193 @@
+<resources>
+    <string name="app_name">Genesis</string>
+
+    <!-- Library / Playlists screens -->
+    <string name="tab_library">媒体</string>
+    <string name="tab_playlists">播放列表</string>
+    <string name="library_title">媒体</string>
+    <string name="playlists_title">播放列表</string>
+    <string name="search_placeholder">按标题或艺人搜索</string>
+    <string name="search_no_results">未找到匹配项</string>
+    <string name="add_to_playlist">添加到播放列表</string>
+    <string name="add">添加</string>
+    <string name="add_n_tracks">添加 %1$d 首曲目</string>
+    <string name="add_tracks">添加曲目</string>
+    <string name="cancel">取消</string>
+    <string name="close">关闭</string>
+    <string name="confirm">确认</string>
+    <string name="delete">删除</string>
+    <string name="rename">重命名</string>
+    <string name="delete_track">从设备删除</string>
+    <string name="rename_track">重命名</string>
+    <string name="delete_track_confirm_title">删除曲目？</string>
+    <string name="delete_track_confirm_message">"%1$s" 将从设备永久删除。</string>
+    <string name="rename_track_title">重命名曲目</string>
+    <string name="rename_track_label">标题</string>
+    <string name="snack_track_deleted">曲目已删除</string>
+    <string name="snack_track_renamed">曲目已重命名</string>
+    <string name="save">保存</string>
+    <string name="play">播放</string>
+    <string name="pause">暂停</string>
+    <string name="next">下一首</string>
+    <string name="previous">上一首</string>
+    <string name="settings">设置</string>
+    <string name="back">返回</string>
+    <string name="more">更多</string>
+
+    <!-- Selection -->
+    <string name="selected_count">已选择 %1$d 项</string>
+    <string name="move_up">上移</string>
+    <string name="move_down">下移</string>
+    <string name="remove_from_playlist">移除</string>
+
+    <!-- Empty / loading / error -->
+    <string name="empty_library_title">还没有曲目</string>
+    <string name="empty_library_subtitle">将音乐添加到设备上后会显示在这里。</string>
+    <string name="empty_search_title">未找到结果</string>
+    <string name="empty_search_subtitle">请尝试更改搜索内容。</string>
+    <string name="empty_playlists_title">还没有播放列表</string>
+    <string name="empty_playlists_subtitle">点击下方按钮创建第一个播放列表。</string>
+    <string name="empty_playlist_title">该播放列表为空</string>
+    <string name="empty_playlist_subtitle">从媒体页面添加曲目。</string>
+    <string name="error_unknown">出现错误</string>
+    <string name="retry">重试</string>
+
+    <!-- Permission -->
+    <string name="permission_title">需要音频访问权限</string>
+    <string name="permission_message">Genesis 需要访问你的音频文件，以便显示音乐库并播放音乐。</string>
+    <string name="permission_grant">授予权限</string>
+    <string name="permission_open_settings">打开设置</string>
+    <string name="permission_permanently_denied">权限已被永久拒绝。请打开设置授予权限。</string>
+
+    <!-- Playlist dialogs -->
+    <string name="new_playlist">新建播放列表</string>
+    <string name="rename_playlist">重命名播放列表</string>
+    <string name="delete_playlist_title">删除播放列表？</string>
+    <string name="delete_playlist_message">这将删除该播放列表，设备上的曲目不会被删除。</string>
+    <string name="playlist_name_hint">播放列表名称</string>
+    <string name="track_count">%1$d 首曲目</string>
+
+    <!-- Now playing -->
+    <string name="now_playing">正在播放</string>
+    <string name="not_playing">未在播放</string>
+    <string name="now_playing_title">正在播放</string>
+    <string name="queue_title">即将播放</string>
+    <string name="queue_empty">队列已空</string>
+    <string name="sleep_timer_title">睡眠定时器</string>
+    <string name="sleep_timer_off">取消定时器</string>
+    <string name="sleep_timer_15min">15 分钟</string>
+    <string name="sleep_timer_30min">30 分钟</string>
+    <string name="sleep_timer_45min">45 分钟</string>
+    <string name="sleep_timer_60min">1 小时</string>
+    <string name="sleep_timer_remaining">%1$s 后停止</string>
+
+    <!-- Snackbars -->
+    <string name="snack_playlist_created">播放列表已创建</string>
+    <string name="snack_playlist_renamed">播放列表已重命名</string>
+    <string name="snack_playlist_deleted">播放列表已删除</string>
+    <string name="snack_tracks_added">已添加 %1$d 首曲目</string>
+    <string name="snack_track_added">已添加曲目</string>
+    <string name="snack_tracks_removed">已移除 %1$d 首曲目</string>
+    <string name="snack_track_removed">已移除曲目</string>
+    <string name="snack_marked_audiobooks">已标记为有声书：%1$d</string>
+    <string name="snack_unmarked_audiobooks">已从有声书移除：%1$d</string>
+
+    <!-- Settings -->
+    <string name="pref_theme">主题</string>
+    <string name="pref_theme_auto">跟随系统</string>
+    <string name="pref_theme_light">浅色</string>
+    <string name="pref_theme_dark">深色</string>
+    <string name="pref_language">语言</string>
+    <string name="pref_language_system">跟随系统</string>
+    <string name="pref_language_english">English</string>
+    <string name="pref_language_russian">Русский</string>
+    <string name="pref_language_spanish">Español</string>
+    <string name="pref_language_chinese">中文</string>
+    <string name="pref_language_german">Deutsch</string>
+    <string name="pref_language_french">Français</string>
+    <string name="pref_language_portuguese">Português</string>
+    <string name="pref_language_japanese">日本語</string>
+    <string name="pref_font_scale">界面大小</string>
+    <string name="font_scale_small">小 (85%)</string>
+    <string name="font_scale_normal">标准 (100%)</string>
+    <string name="font_scale_large">大 (115%)</string>
+    <string name="font_scale_xlarge">特大 (130%)</string>
+    <string name="pref_section_audio">音频</string>
+
+    <!-- Equalizer -->
+    <string name="equalizer_title">均衡器</string>
+    <string name="equalizer_master">启用</string>
+    <string name="equalizer_section_presets">预设</string>
+    <string name="equalizer_section_bands">频段</string>
+    <string name="equalizer_unsupported">此设备不支持均衡器</string>
+    <string name="equalizer_preset_default">默认</string>
+    <string name="equalizer_preset_new">新建预设</string>
+    <string name="equalizer_preset_save_title">保存预设</string>
+    <string name="equalizer_preset_rename_title">重命名预设</string>
+    <string name="equalizer_preset_name_hint">预设名称</string>
+    <string name="equalizer_preset_name_duplicate">已存在同名预设</string>
+
+    <!-- Sort -->
+    <string name="sort_by">排序方式</string>
+    <string name="sort_date_added_desc">最近添加</string>
+    <string name="sort_title_asc">标题 A→Z</string>
+    <string name="sort_title_desc">标题 Z→A</string>
+    <string name="sort_artist_asc">艺人 A→Z</string>
+    <string name="sort_album_asc">专辑 A→Z</string>
+    <string name="sort_duration_asc">时长 ↑</string>
+    <string name="sort_duration_desc">时长 ↓</string>
+
+    <!-- Track row -->
+    <string name="track_more_actions">更多操作</string>
+
+    <!-- Library browse tabs -->
+    <string name="browse_tracks">曲目</string>
+    <string name="browse_albums">专辑</string>
+    <string name="browse_playlists">播放列表</string>
+    <string name="browse_audiobooks">有声书</string>
+    <string name="browse_artists">艺人</string>
+    <string name="browse_folders">文件夹</string>
+    <string name="empty_audiobooks_title">还没有有声书</string>
+    <string name="empty_audiobooks_subtitle">设备上标记为有声书的文件会显示在这里。</string>
+    <string name="mark_as_audiobook">标记为有声书</string>
+    <string name="unmark_audiobook">从有声书移除</string>
+    <string name="empty_albums_title">还没有专辑</string>
+    <string name="empty_artists_title">还没有艺人</string>
+    <string name="empty_folders_title">还没有文件夹</string>
+    <string name="album_track_count">%1$d 首曲目</string>
+    <string name="artist_track_count">%1$d 首曲目 · %2$d 张专辑</string>
+    <string name="folder_track_count">%1$d 首曲目</string>
+    <string name="recent_searches">最近搜索</string>
+    <string name="remove_recent_search">从历史中移除</string>
+    <string name="toggle_layout">切换视图</string>
+
+    <!-- Widget -->
+    <string name="widget_label">Genesis 播放列表</string>
+    <string name="widget_description">将播放列表固定到主屏幕。</string>
+    <string name="widget_choose_playlist">选择播放列表</string>
+    <string name="widget_choose_target">选择来源</string>
+    <string name="widget_no_playlists_empty">还没有播放列表。请先在 Genesis 中创建。</string>
+    <string name="widget_no_targets_empty">还没有播放列表或有声书。请先在 Genesis 中添加。</string>
+    <string name="widget_target_audiobooks">所有有声书</string>
+    <string name="widget_audiobook_count_fmt">%1$d 首曲目</string>
+    <string name="widget_audiobook_empty">还没有有声书</string>
+    <string name="widget_unbound_title">小部件未配置</string>
+    <string name="widget_unbound_subtitle">点击选择来源</string>
+    <string name="widget_missing_playlist_title">播放列表已删除</string>
+    <string name="widget_missing_playlist_subtitle">点击重新配置</string>
+    <string name="widget_empty_playlist_subtitle">播放列表为空</string>
+    <string name="widget_play_playlist">播放列表</string>
+    <string name="widget_foreign_subtitle">点击播放</string>
+    <string name="widget_bg_label">背景</string>
+    <string name="widget_bg_dark">深色</string>
+    <string name="widget_bg_light">浅色</string>
+    <string name="add_to_queue">添加到队列</string>
+    <string name="snack_added_to_queue">已将 %1$d 首歌曲加入队列</string>
+    <string name="enqueue_tracks_picker_stub">曲目选择器即将推出——暂时请选择歌单或专辑</string>
+    <string name="cd_drag_to_reorder">拖动以重新排序</string>
+    <string name="reorder_tracks">重新排序</string>
+    <string name="cd_loop_off">循环：关闭</string>
+    <string name="cd_loop_all">循环：全部重复</string>
+    <string name="cd_loop_one">循环：单曲重复</string>
+    <string name="cd_shuffle">随机播放</string>
+</resources>

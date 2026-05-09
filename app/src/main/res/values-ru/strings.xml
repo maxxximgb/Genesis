@@ -2,11 +2,12 @@
     <string name="app_name">Genesis</string>
 
     <!-- Library / Playlists screens -->
-    <string name="tab_library">Библиотека</string>
+    <string name="tab_library">Медиа</string>
     <string name="tab_playlists">Плейлисты</string>
-    <string name="library_title">Библиотека</string>
+    <string name="library_title">Медиа</string>
     <string name="playlists_title">Плейлисты</string>
     <string name="search_placeholder">Поиск по названию или артисту</string>
+    <string name="search_no_results">Ничего не найдено</string>
     <string name="add_to_playlist">Добавить в плейлист</string>
     <string name="add">Добавить</string>
     <string name="add_n_tracks">Добавить треков: %1$d</string>
@@ -16,6 +17,14 @@
     <string name="confirm">Подтвердить</string>
     <string name="delete">Удалить</string>
     <string name="rename">Переименовать</string>
+    <string name="delete_track">Удалить с устройства</string>
+    <string name="rename_track">Переименовать</string>
+    <string name="delete_track_confirm_title">Удалить трек?</string>
+    <string name="delete_track_confirm_message">\"%1$s\" будет удалён с устройства без возможности восстановления.</string>
+    <string name="rename_track_title">Переименовать трек</string>
+    <string name="rename_track_label">Название</string>
+    <string name="snack_track_deleted">Трек удалён</string>
+    <string name="snack_track_renamed">Трек переименован</string>
     <string name="save">Сохранить</string>
     <string name="play">Воспроизвести</string>
     <string name="pause">Пауза</string>
@@ -61,6 +70,16 @@
     <!-- Now playing -->
     <string name="now_playing">Сейчас играет</string>
     <string name="not_playing">Ничего не играет</string>
+    <string name="now_playing_title">Сейчас играет</string>
+    <string name="queue_title">Очередь</string>
+    <string name="queue_empty">В очереди больше ничего нет</string>
+    <string name="sleep_timer_title">Таймер сна</string>
+    <string name="sleep_timer_off">Отменить</string>
+    <string name="sleep_timer_15min">15 мин</string>
+    <string name="sleep_timer_30min">30 мин</string>
+    <string name="sleep_timer_45min">45 мин</string>
+    <string name="sleep_timer_60min">1 час</string>
+    <string name="sleep_timer_remaining">Остановка через %1$s</string>
 
     <!-- Snackbars -->
     <string name="snack_playlist_created">Плейлист создан</string>
@@ -70,22 +89,43 @@
     <string name="snack_track_added">Трек добавлен</string>
     <string name="snack_tracks_removed">Удалено треков: %1$d</string>
     <string name="snack_track_removed">Трек удалён</string>
+    <string name="snack_marked_audiobooks">Помечено как аудиокниги: %1$d</string>
+    <string name="snack_unmarked_audiobooks">Убрано из аудиокниг: %1$d</string>
 
     <!-- Settings -->
     <string name="pref_theme">Тема</string>
     <string name="pref_theme_auto">Как в системе</string>
     <string name="pref_theme_light">Светлая</string>
     <string name="pref_theme_dark">Тёмная</string>
-    <string name="pref_palette">Палитра</string>
     <string name="pref_language">Язык</string>
     <string name="pref_language_system">Как в системе</string>
     <string name="pref_language_english">English</string>
     <string name="pref_language_russian">Русский</string>
+    <string name="pref_language_spanish">Español</string>
+    <string name="pref_language_chinese">中文</string>
+    <string name="pref_language_german">Deutsch</string>
+    <string name="pref_language_french">Français</string>
+    <string name="pref_language_portuguese">Português</string>
+    <string name="pref_language_japanese">日本語</string>
     <string name="pref_font_scale">Размер интерфейса</string>
     <string name="font_scale_small">Маленький (85%)</string>
     <string name="font_scale_normal">Обычный (100%)</string>
     <string name="font_scale_large">Большой (115%)</string>
     <string name="font_scale_xlarge">Очень большой (130%)</string>
+    <string name="pref_section_audio">Аудио</string>
+
+    <!-- Equalizer -->
+    <string name="equalizer_title">Эквалайзер</string>
+    <string name="equalizer_master">Включить</string>
+    <string name="equalizer_section_presets">Пресеты</string>
+    <string name="equalizer_section_bands">Полосы</string>
+    <string name="equalizer_unsupported">Эквалайзер не поддерживается на этом устройстве</string>
+    <string name="equalizer_preset_default">По умолчанию</string>
+    <string name="equalizer_preset_new">Новый пресет</string>
+    <string name="equalizer_preset_save_title">Сохранить пресет</string>
+    <string name="equalizer_preset_rename_title">Переименовать пресет</string>
+    <string name="equalizer_preset_name_hint">Название пресета</string>
+    <string name="equalizer_preset_name_duplicate">Пресет с таким именем уже существует</string>
 
     <!-- Sort -->
     <string name="sort_by">Сортировка</string>
@@ -97,29 +137,26 @@
     <string name="sort_duration_asc">Длительность ↑</string>
     <string name="sort_duration_desc">Длительность ↓</string>
 
-    <!-- Palettes -->
-    <string name="palette_verdant">Зелёная</string>
-    <string name="palette_amber">Янтарная</string>
-    <string name="palette_indigo">Индиго</string>
-    <string name="palette_crimson">Багровая</string>
-    <string name="palette_teal">Бирюзовая</string>
-    <string name="palette_dynamic">Material You</string>
-
     <!-- Track row -->
     <string name="track_more_actions">Действия</string>
 
     <!-- Library browse tabs -->
     <string name="browse_tracks">Треки</string>
     <string name="browse_albums">Альбомы</string>
+    <string name="browse_playlists">Плейлисты</string>
+    <string name="browse_audiobooks">Аудиокниги</string>
     <string name="browse_artists">Артисты</string>
     <string name="browse_folders">Папки</string>
+    <string name="empty_audiobooks_title">Аудиокниг пока нет</string>
+    <string name="empty_audiobooks_subtitle">Файлы с тегом аудиокниги появятся здесь.</string>
+    <string name="mark_as_audiobook">Пометить как аудиокнигу</string>
+    <string name="unmark_audiobook">Убрать из аудиокниг</string>
     <string name="empty_albums_title">Альбомов пока нет</string>
     <string name="empty_artists_title">Исполнителей пока нет</string>
     <string name="empty_folders_title">Папок пока нет</string>
     <string name="album_track_count">%1$d треков</string>
     <string name="artist_track_count">%1$d треков · %2$d альбомов</string>
     <string name="folder_track_count">%1$d треков</string>
-    <string name="unknown_artist">Неизвестный исполнитель</string>
     <string name="recent_searches">Недавние запросы</string>
     <string name="remove_recent_search">Убрать из истории</string>
     <string name="toggle_layout">Переключить вид</string>
@@ -128,9 +165,14 @@
     <string name="widget_label">Плейлист Genesis</string>
     <string name="widget_description">Закрепите плейлист на главном экране.</string>
     <string name="widget_choose_playlist">Выберите плейлист</string>
+    <string name="widget_choose_target">Что показывать</string>
     <string name="widget_no_playlists_empty">Плейлистов пока нет. Создайте плейлист в Genesis.</string>
+    <string name="widget_no_targets_empty">Нет ни плейлистов, ни аудиокниг. Добавьте их в Genesis.</string>
+    <string name="widget_target_audiobooks">Все аудиокниги</string>
+    <string name="widget_audiobook_count_fmt">%1$d треков</string>
+    <string name="widget_audiobook_empty">Аудиокниг пока нет</string>
     <string name="widget_unbound_title">Виджет не настроен</string>
-    <string name="widget_unbound_subtitle">Нажмите, чтобы выбрать плейлист</string>
+    <string name="widget_unbound_subtitle">Нажмите, чтобы выбрать</string>
     <string name="widget_missing_playlist_title">Плейлист удалён</string>
     <string name="widget_missing_playlist_subtitle">Нажмите, чтобы перенастроить</string>
     <string name="widget_empty_playlist_subtitle">Плейлист пуст</string>
@@ -139,6 +181,11 @@
     <string name="widget_bg_label">Фон</string>
     <string name="widget_bg_dark">Тёмный</string>
     <string name="widget_bg_light">Светлый</string>
+    <string name="add_to_queue">Добавить в очередь</string>
+    <string name="snack_added_to_queue">%1$d треков добавлено в очередь</string>
+    <string name="enqueue_tracks_picker_stub">Выбор треков скоро будет — пока добавляй из плейлиста или альбома</string>
+    <string name="cd_drag_to_reorder">Перетащите, чтобы изменить порядок</string>
+    <string name="reorder_tracks">Изменить порядок</string>
     <string name="cd_loop_off">Цикл: выключен</string>
     <string name="cd_loop_all">Цикл: повтор всего</string>
     <string name="cd_loop_one">Цикл: повтор трека</string>

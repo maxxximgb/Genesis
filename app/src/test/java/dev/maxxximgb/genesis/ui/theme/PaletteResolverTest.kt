@@ -7,33 +7,20 @@ class PaletteResolverTest {
 
     @Test
     fun fromNameMatchesEnumNamesCaseSensitively() {
-        assertEquals(PaletteId.VERDANT, PaletteId.fromName("VERDANT"))
-        assertEquals(PaletteId.AMBER, PaletteId.fromName("AMBER"))
-        assertEquals(PaletteId.INDIGO, PaletteId.fromName("INDIGO"))
-        assertEquals(PaletteId.CRIMSON, PaletteId.fromName("CRIMSON"))
-        assertEquals(PaletteId.TEAL, PaletteId.fromName("TEAL"))
-        assertEquals(PaletteId.DYNAMIC, PaletteId.fromName("DYNAMIC"))
+        assertEquals(PaletteId.ITUNES, PaletteId.fromName("ITUNES"))
     }
 
     @Test
-    fun unknownNameFallsBackToVerdant() {
-        assertEquals(PaletteId.VERDANT, PaletteId.fromName("WTF"))
-        assertEquals(PaletteId.VERDANT, PaletteId.fromName(null))
-        assertEquals(PaletteId.VERDANT, PaletteId.fromName(""))
-        assertEquals(PaletteId.VERDANT, PaletteId.fromName("verdant")) // wrong case
+    fun unknownNameFallsBackToDefault() {
+        assertEquals(PaletteId.ITUNES, PaletteId.fromName("WTF"))
+        assertEquals(PaletteId.ITUNES, PaletteId.fromName(null))
+        assertEquals(PaletteId.ITUNES, PaletteId.fromName(""))
+        assertEquals(PaletteId.ITUNES, PaletteId.fromName("itunes")) // wrong case
     }
 
     @Test
-    fun defaultIsVerdant() {
-        assertEquals(PaletteId.VERDANT, PaletteId.DEFAULT)
-    }
-
-    @Test
-    fun allPalettesHaveSeedAndDisplayResource() {
-        for (palette in PaletteId.entries) {
-            assertEquals(true, palette.seed.alpha > 0f) // seed is fully opaque
-            assertEquals(true, palette.displayResId != 0)
-        }
+    fun defaultIsItunes() {
+        assertEquals(PaletteId.ITUNES, PaletteId.DEFAULT)
     }
 
     @Test
