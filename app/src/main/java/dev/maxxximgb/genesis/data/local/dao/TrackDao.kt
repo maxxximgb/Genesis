@@ -18,6 +18,10 @@ interface TrackDao {
     @Query("DELETE FROM tracks WHERE mediaStoreId = :mediaStoreId")
     suspend fun delete(mediaStoreId: Long)
 
+    /** Updates the cached title for a track that was renamed in MediaStore. */
+    @Query("UPDATE tracks SET title = :newTitle WHERE mediaStoreId = :mediaStoreId")
+    suspend fun updateTitle(mediaStoreId: Long, newTitle: String)
+
     @Query("SELECT * FROM tracks WHERE mediaStoreId = :mediaStoreId")
     suspend fun findById(mediaStoreId: Long): TrackEntity?
 
