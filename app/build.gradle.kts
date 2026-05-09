@@ -28,7 +28,7 @@ android {
 
     defaultConfig {
         applicationId = "dev.maxxximgb.genesis"
-        minSdk = 35
+        minSdk = 30
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -51,7 +51,12 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            // R8 + resource shrink. Without these the release APK was ~58 MB; nearly
+            // all of that was material-icons-extended dragging in thousands of unused
+            // icon classes via classes.dex. With minify on, only icons actually
+            // referenced via Icons.Filled.X / Icons.AutoMirrored.Filled.X survive.
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -109,6 +114,7 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
     implementation("androidx.compose.material:material-icons-extended")
+    implementation("androidx.compose.ui:ui-text-google-fonts")
     debugImplementation("androidx.compose.ui:ui-tooling")
 
     implementation("androidx.navigation:navigation-compose:2.7.7")
