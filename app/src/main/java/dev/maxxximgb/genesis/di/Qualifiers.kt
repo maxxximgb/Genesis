@@ -21,3 +21,7 @@ annotation class WidgetPreferences
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
 annotation class SearchHistoryPreferences
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class EqualizerPresets

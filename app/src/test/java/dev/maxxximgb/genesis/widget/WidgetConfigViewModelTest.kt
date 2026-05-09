@@ -1,8 +1,11 @@
 package dev.maxxximgb.genesis.widget
 
 import app.cash.turbine.test
+import dev.maxxximgb.genesis.data.preferences.UserPreferencesStore
 import dev.maxxximgb.genesis.data.preferences.WidgetPreferencesStore
 import dev.maxxximgb.genesis.domain.model.Playlist
+import dev.maxxximgb.genesis.domain.model.SortOrder
+import dev.maxxximgb.genesis.domain.repository.MediaLibraryRepository
 import dev.maxxximgb.genesis.domain.usecase.playlist.ObservePlaylistsUseCase
 import dev.maxxximgb.genesis.util.MainDispatcherRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -12,9 +15,11 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -25,6 +30,15 @@ class WidgetConfigViewModelTest {
 
     private fun playlist(id: Long, name: String) = Playlist(id = id, name = name, createdAt = id)
 
+    private fun userPrefsMock(): UserPreferencesStore = mock {
+        on { observeLibrarySort() } doReturn flowOf(SortOrder.DATE_ADDED_DESC)
+        on { observeAudiobookOverrides() } doReturn flowOf(emptySet())
+    }
+
+    private suspend fun mediaRepoMock(): MediaLibraryRepository = mock {
+        onBlocking { getAudiobookTracks(any(), any()) } doReturn emptyList()
+    }
+
     @Test
     fun playlistsExposesUseCaseStream() = runTest {
         val rows = listOf(playlist(1L, "Rock"), playlist(2L, "Chill"))
@@ -32,9 +46,8 @@ class WidgetConfigViewModelTest {
             on { invoke() } doReturn flowOf(rows)
         }
         val prefs = mock<WidgetPreferencesStore>()
-        val userPrefs = mock<dev.maxxximgb.genesis.data.preferences.UserPreferencesStore>()
         val updater = mock<WidgetUpdater>()
-        val vm = WidgetConfigViewModel(useCase, prefs, userPrefs, updater)
+        val vm = WidgetConfigViewModel(useCase, prefs, userPrefsMock(), updater, mediaRepoMock())
 
         vm.playlists.test {
             // Initial value emitted by stateIn before upstream collection completes.
@@ -47,20 +60,36 @@ class WidgetConfigViewModelTest {
     }
 
     @Test
-    fun bindPersistsToStoreAndInvokesCallback() = runTest {
+    fun bindPersistsPlaylistTargetAndInvokesCallback() = runTest {
         val useCase = mock<ObservePlaylistsUseCase> {
             on { invoke() } doReturn flowOf(emptyList())
         }
         val prefs = mock<WidgetPreferencesStore>()
-        val userPrefs = mock<dev.maxxximgb.genesis.data.preferences.UserPreferencesStore>()
         val updater = mock<WidgetUpdater>()
-        val vm = WidgetConfigViewModel(useCase, prefs, userPrefs, updater)
+        val vm = WidgetConfigViewModel(useCase, prefs, userPrefsMock(), updater, mediaRepoMock())
 
         var called = false
         vm.bind(appWidgetId = 42, playlistId = 7L) { called = true }
 
-        verify(prefs).setPlaylistFor(eq(42), eq(7L))
+        verify(prefs).setTarget(eq(42), eq(WidgetTarget.Playlist(7L)))
         verify(updater).updateWhenBound(eq(42))
+        assertTrue(called)
+    }
+
+    @Test
+    fun bindAudiobooksPersistsAudiobookTarget() = runTest {
+        val useCase = mock<ObservePlaylistsUseCase> {
+            on { invoke() } doReturn flowOf(emptyList())
+        }
+        val prefs = mock<WidgetPreferencesStore>()
+        val updater = mock<WidgetUpdater>()
+        val vm = WidgetConfigViewModel(useCase, prefs, userPrefsMock(), updater, mediaRepoMock())
+
+        var called = false
+        vm.bindAudiobooks(appWidgetId = 5) { called = true }
+
+        verify(prefs).setTarget(eq(5), eq(WidgetTarget.Audiobooks))
+        verify(updater).updateWhenBound(eq(5))
         assertTrue(called)
     }
 
@@ -70,9 +99,8 @@ class WidgetConfigViewModelTest {
             on { invoke() } doReturn flowOf(emptyList())
         }
         val prefs = mock<WidgetPreferencesStore>()
-        val userPrefs = mock<dev.maxxximgb.genesis.data.preferences.UserPreferencesStore>()
         val updater = mock<WidgetUpdater>()
-        val vm = WidgetConfigViewModel(useCase, prefs, userPrefs, updater)
+        val vm = WidgetConfigViewModel(useCase, prefs, userPrefsMock(), updater, mediaRepoMock())
 
         var firstCalled = 0
         var secondCalled = 0
@@ -81,7 +109,7 @@ class WidgetConfigViewModelTest {
 
         assertEquals(1, firstCalled)
         assertEquals(0, secondCalled)
-        verify(prefs).setPlaylistFor(eq(1), eq(1L))
-        org.mockito.kotlin.verify(prefs, org.mockito.kotlin.never()).setPlaylistFor(eq(1), eq(2L))
+        verify(prefs).setTarget(eq(1), eq(WidgetTarget.Playlist(1L)))
+        verify(prefs, never()).setTarget(eq(1), eq(WidgetTarget.Playlist(2L)))
     }
 }

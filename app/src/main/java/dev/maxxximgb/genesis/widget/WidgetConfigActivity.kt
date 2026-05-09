@@ -26,6 +26,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MenuBook
 import androidx.compose.material.icons.filled.QueueMusic
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
@@ -103,6 +104,7 @@ private fun WidgetConfigScreen(
     val playlists by viewModel.playlists.collectAsStateWithLifecycle()
     val isBinding by viewModel.isBinding.collectAsStateWithLifecycle()
     val background by viewModel.selectedBackground.collectAsStateWithLifecycle()
+    val audiobookCount by viewModel.audiobookCount.collectAsStateWithLifecycle()
     val isSystemInDark = (LocalConfiguration.current.uiMode and Configuration.UI_MODE_NIGHT_MASK) ==
         Configuration.UI_MODE_NIGHT_YES
 
@@ -112,23 +114,38 @@ private fun WidgetConfigScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text(stringResource(R.string.widget_choose_playlist)) })
+            TopAppBar(title = { Text(stringResource(R.string.widget_choose_target)) })
         },
     ) { padding ->
         Box(modifier = Modifier.fillMaxSize().padding(padding)) {
-            if (playlists.isEmpty()) {
+            // Render the picker even when there are no playlists — we still want to expose
+            // the "All audiobooks" target. We only show the "no content at all" empty state
+            // when both lists are empty.
+            val hasAnything = playlists.isNotEmpty() || audiobookCount > 0
+            if (!hasAnything) {
                 Column(
                     modifier = Modifier.fillMaxSize().padding(24.dp),
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     Text(
-                        text = stringResource(R.string.widget_no_playlists_empty),
+                        text = stringResource(R.string.widget_no_targets_empty),
                         style = MaterialTheme.typography.bodyLarge,
                     )
                 }
             } else {
                 LazyColumn(modifier = Modifier.fillMaxWidth()) {
+                    item(key = "audiobooks-target") {
+                        AudiobooksItem(
+                            count = audiobookCount,
+                            enabled = !isBinding && audiobookCount > 0,
+                        ) {
+                            viewModel.bindAudiobooks(appWidgetId) {
+                                onPlaylistChosen(appWidgetId)
+                            }
+                        }
+                        HorizontalDivider()
+                    }
                     items(playlists, key = { it.id }) { playlist ->
                         PlaylistItem(playlist = playlist, enabled = !isBinding) {
                             viewModel.bind(appWidgetId, playlist.id) {
@@ -160,6 +177,28 @@ private fun PlaylistItem(playlist: Playlist, enabled: Boolean, onClick: () -> Un
             Icon(Icons.Filled.QueueMusic, contentDescription = null)
         },
         headlineContent = { Text(playlist.name) },
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun AudiobooksItem(count: Int, enabled: Boolean, onClick: () -> Unit) {
+    ListItem(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(enabled = enabled, onClick = onClick),
+        leadingContent = {
+            Icon(Icons.Filled.MenuBook, contentDescription = null)
+        },
+        headlineContent = { Text(stringResource(R.string.widget_target_audiobooks)) },
+        supportingContent = {
+            val label = if (count > 0) {
+                stringResource(R.string.widget_audiobook_count_fmt, count)
+            } else {
+                stringResource(R.string.widget_audiobook_empty)
+            }
+            Text(label)
+        },
     )
 }
 

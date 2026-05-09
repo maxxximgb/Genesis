@@ -1,7 +1,6 @@
 package dev.maxxximgb.genesis.widget
 
 import android.graphics.Color
-import androidx.core.graphics.ColorUtils
 
 enum class WidgetBackgroundChoice {
     Dark,
@@ -11,26 +10,28 @@ enum class WidgetBackgroundChoice {
         const val MODE_DARK = 0
         const val MODE_LIGHT = 1
 
-        private const val MUTED_ALPHA = 0.65f
-
         // Neutral, eye-friendly off-black / off-white. Not pure #000 / #FFF.
         private const val DARK_BG = 0xFF1A1A1A.toInt()
         private const val LIGHT_BG = 0xFFF5F5F5.toInt()
+
+        // Solid gray for inactive icons / muted text. Earlier alpha-based muted didn't
+        // visibly dim icons through Glance → RemoteViews ColorFilter.tint on some launchers,
+        // so we use a flat color the launcher can't accidentally re-saturate.
+        private const val DARK_MUTED = 0xFF6E6E6E.toInt()
+        private const val LIGHT_MUTED = 0xFF8E8E8E.toInt()
 
         fun colorsFor(choice: WidgetBackgroundChoice): WidgetColors = when (choice) {
             Dark -> WidgetColors(
                 background = DARK_BG,
                 onBackground = Color.WHITE,
-                onBackgroundMuted = ColorUtils.setAlphaComponent(Color.WHITE, mutedAlpha()),
+                onBackgroundMuted = DARK_MUTED,
             )
             Light -> WidgetColors(
                 background = LIGHT_BG,
                 onBackground = 0xFF1A1A1A.toInt(),
-                onBackgroundMuted = ColorUtils.setAlphaComponent(0xFF1A1A1A.toInt(), mutedAlpha()),
+                onBackgroundMuted = LIGHT_MUTED,
             )
         }
-
-        private fun mutedAlpha(): Int = (MUTED_ALPHA * 255f).toInt()
     }
 }
 

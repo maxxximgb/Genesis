@@ -2,6 +2,8 @@ package dev.maxxximgb.genesis.widget
 
 import dev.maxxximgb.genesis.data.preferences.UserPreferencesStore
 import dev.maxxximgb.genesis.data.preferences.WidgetPreferencesStore
+import dev.maxxximgb.genesis.domain.model.SortOrder
+import dev.maxxximgb.genesis.domain.repository.MediaLibraryRepository
 import dev.maxxximgb.genesis.domain.usecase.playlist.ObservePlaylistsUseCase
 import dev.maxxximgb.genesis.ui.theme.ThemeMode
 import dev.maxxximgb.genesis.util.MainDispatcherRule
@@ -82,7 +84,7 @@ class WidgetConfigViewModelBackgroundTest {
     }
 
     @Test
-    fun bindPersistsBothPlaylistAndBackground() = runTest {
+    fun bindPersistsBothTargetAndBackground() = runTest {
         val widgetPrefs = mock<WidgetPreferencesStore>()
         val vm = newVm(widgetPrefs = widgetPrefs)
 
@@ -90,16 +92,23 @@ class WidgetConfigViewModelBackgroundTest {
         vm.bind(appWidgetId = 7, playlistId = 99L) { /* committed */ }
         advanceUntilIdle()
 
-        verify(widgetPrefs).setPlaylistFor(eq(7), eq(99L))
+        verify(widgetPrefs).setTarget(eq(7), eq(WidgetTarget.Playlist(99L)))
         verify(widgetPrefs).setBackgroundFor(eq(7), eq(WidgetBackgroundChoice.Light))
     }
 
     private fun newVm(
         widgetPrefs: WidgetPreferencesStore = mock(),
-        userPrefs: UserPreferencesStore = mock { on { observeThemeMode() } doReturn flowOf(ThemeMode.AUTO) },
+        userPrefs: UserPreferencesStore = mock {
+            on { observeThemeMode() } doReturn flowOf(ThemeMode.AUTO)
+            on { observeLibrarySort() } doReturn flowOf(SortOrder.DATE_ADDED_DESC)
+            on { observeAudiobookOverrides() } doReturn flowOf(emptySet())
+        },
     ): WidgetConfigViewModel {
         val useCase = mock<ObservePlaylistsUseCase> { on { invoke() } doReturn flowOf(emptyList()) }
         val updater = mock<WidgetUpdater>()
-        return WidgetConfigViewModel(useCase, widgetPrefs, userPrefs, updater)
+        val mediaRepo = mock<MediaLibraryRepository> {
+            onBlocking { getAudiobookTracks(any(), any()) } doReturn emptyList()
+        }
+        return WidgetConfigViewModel(useCase, widgetPrefs, userPrefs, updater, mediaRepo)
     }
 }

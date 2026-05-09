@@ -1,7 +1,10 @@
 package dev.maxxximgb.genesis.data.preferences
 
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.longPreferencesKey
 import dev.maxxximgb.genesis.widget.WidgetBackgroundChoice
+import dev.maxxximgb.genesis.widget.WidgetTarget
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -20,12 +23,13 @@ class WidgetPreferencesStoreTest {
     @get:Rule
     val tempFolder = TemporaryFolder()
 
+    private lateinit var ds: androidx.datastore.core.DataStore<androidx.datastore.preferences.core.Preferences>
     private lateinit var store: WidgetPreferencesStore
 
     @Before
     fun setUp() {
         val file = File(tempFolder.newFolder(), "widget_prefs.preferences_pb")
-        val ds = PreferenceDataStoreFactory.create(produceFile = { file })
+        ds = PreferenceDataStoreFactory.create(produceFile = { file })
         store = WidgetPreferencesStore(ds)
     }
 
@@ -94,5 +98,43 @@ class WidgetPreferencesStoreTest {
         store.clear(11)
         assertNull(store.getPlaylistFor(11))
         assertNull(store.getStoredBackgroundFor(11))
+    }
+
+    @Test
+    fun audiobookTargetRoundTrips() = runTest {
+        store.setTarget(20, WidgetTarget.Audiobooks)
+
+        assertEquals(WidgetTarget.Audiobooks, store.getTargetFor(20))
+        assertEquals(WidgetTarget.Audiobooks, store.observeTargetFor(20).first())
+        // Legacy playlist API returns null for non-playlist targets so old code paths
+        // don't accidentally treat the audiobook queue as a playlist id.
+        assertNull(store.getPlaylistFor(20))
+    }
+
+    @Test
+    fun playlistTargetRoundTrips() = runTest {
+        store.setTarget(21, WidgetTarget.Playlist(7L))
+
+        assertEquals(WidgetTarget.Playlist(7L), store.getTargetFor(21))
+        assertEquals(7L, store.getPlaylistFor(21))
+    }
+
+    @Test
+    fun legacyLongOnlyPlaylistKeyReadsBackAsTarget() = runTest {
+        // Simulate a widget bound before 2.3 — only the long-typed playlist key is present,
+        // the new "widget_target_*" string key is absent.
+        ds.edit { it[longPreferencesKey("widget_playlist_99")] = 555L }
+
+        assertEquals(WidgetTarget.Playlist(555L), store.getTargetFor(99))
+        assertEquals(555L, store.getPlaylistFor(99))
+    }
+
+    @Test
+    fun setAudiobookTargetClearsLegacyPlaylistKey() = runTest {
+        store.setPlaylistFor(30, 7L)
+        store.setTarget(30, WidgetTarget.Audiobooks)
+
+        assertEquals(WidgetTarget.Audiobooks, store.getTargetFor(30))
+        assertNull(store.getPlaylistFor(30))
     }
 }

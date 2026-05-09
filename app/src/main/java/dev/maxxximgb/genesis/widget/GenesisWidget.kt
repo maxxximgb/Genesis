@@ -56,12 +56,18 @@ import androidx.glance.unit.ColorProvider
 import dagger.hilt.EntryPoints
 import dev.maxxximgb.genesis.MainActivity
 import dev.maxxximgb.genesis.R
+import dev.maxxximgb.genesis.data.preferences.BookmarkStore
 import dev.maxxximgb.genesis.domain.model.LoopState
 import dev.maxxximgb.genesis.domain.model.PlaybackState
+import dev.maxxximgb.genesis.domain.model.Playlist
 import dev.maxxximgb.genesis.domain.model.PlaylistDetail
 import dev.maxxximgb.genesis.domain.model.Track
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 
 class GenesisWidget : GlanceAppWidget() {
 
@@ -70,32 +76,82 @@ class GenesisWidget : GlanceAppWidget() {
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         val deps = EntryPoints.get(context.applicationContext, WidgetEntryPoint::class.java)
         val appWidgetId = GlanceAppWidgetManager(context).getAppWidgetId(id)
+        val audiobooksTitle = context.getString(R.string.widget_target_audiobooks)
 
-        // Sources are observed inside provideContent so Glance recomposition picks up
-        // updates without re-running provideGlance.
+        // Pre-fetch the persisted target + mode + background BEFORE starting Glance composition.
+        // collectAsState would otherwise hand the composer its `initial` placeholder for one
+        // frame (UNBOUND card, OFF loop icon, Dark theme) before the DataStore flow's first
+        // emission lands — visible as a flash on cold starts and on every launcher rebind.
+        // These reads are fast (DataStore in-memory cache after first hit, file I/O once).
+        val initialTarget = deps.widgetPreferencesStore().getTargetFor(appWidgetId)
+        val initialPid = when (initialTarget) {
+            null -> null
+            is WidgetTarget.Playlist -> initialTarget.playlistId
+            WidgetTarget.Audiobooks -> AUDIOBOOK_PSEUDO_PLAYLIST_ID
+        }
+        val initialMode = initialPid?.let { deps.playlistModeStore().getMode(it) } ?: LoopState.OFF
+        val initialBookmark = initialPid?.let { deps.bookmarkStore().get(it) }
+        val initialBackground = deps.widgetPreferencesStore().getStoredBackgroundFor(appWidgetId)
+            ?: WidgetBackgroundChoice.Dark
+
         provideContent {
             GlanceTheme {
-                val widgetPlaylistId by deps.widgetPreferencesStore()
-                    .observePlaylistFor(appWidgetId)
-                    .collectAsState(initial = null)
+                val target by deps.widgetPreferencesStore()
+                    .observeTargetFor(appWidgetId)
+                    .collectAsState(initial = initialTarget)
                 val state by deps.playbackStateStore()
                     .flow
                     .collectAsState(initial = PlaybackState())
-                val pid = widgetPlaylistId
-                val playlist = observePerPlaylist(pid, default = null) {
-                    deps.playlistRepository().observePlaylist(it)
+
+                val pid = when (val t = target) {
+                    null -> null
+                    is WidgetTarget.Playlist -> t.playlistId
+                    WidgetTarget.Audiobooks -> AUDIOBOOK_PSEUDO_PLAYLIST_ID
                 }
-                val tracks = observePerPlaylist(pid, default = emptyList<Track>()) {
-                    deps.playlistRepository().observePlaylistTracks(it)
+
+                // Detail and mode flows depend on the target type. We materialise them per
+                // target so the audiobook branch doesn't reach into the playlist repository.
+                val detail = when (val t = target) {
+                    null -> null
+                    is WidgetTarget.Playlist -> {
+                        val playlist by deps.playlistRepository()
+                            .observePlaylist(t.playlistId)
+                            .collectAsState(initial = null)
+                        val tracks by deps.playlistRepository()
+                            .observePlaylistTracks(t.playlistId)
+                            .collectAsState(initial = emptyList())
+                        playlist?.let { PlaylistDetail(playlist = it, tracks = tracks) }
+                    }
+                    WidgetTarget.Audiobooks -> {
+                        val tracks by remember(t) { audiobookTracksFlow(deps) }
+                            .collectAsState(initial = emptyList())
+                        PlaylistDetail(
+                            playlist = audiobookPseudoPlaylist(audiobooksTitle),
+                            tracks = tracks,
+                        )
+                    }
                 }
-                val mode = observePerPlaylist(pid, default = LoopState.OFF) {
-                    deps.playlistModeStore().observeMode(it)
-                }
+
+                val mode = if (pid != null) {
+                    val m by deps.playlistModeStore().observeMode(pid)
+                        .collectAsState(initial = if (pid == initialPid) initialMode else LoopState.OFF)
+                    m
+                } else LoopState.OFF
+
+                // Bookmark drives OWN_IDLE rendering (when this widget's playlist isn't on the
+                // player). Without it, switching to a second widget would blank the first; with
+                // it, each widget shows its own playlist's last-played track + a transport that
+                // resumes from there. Observed so it stays fresh while the user listens to this
+                // playlist (every position tick writes a new bookmark).
+                val bookmark = if (pid != null) {
+                    val b by deps.bookmarkStore().observe(pid)
+                        .collectAsState(initial = if (pid == initialPid) initialBookmark else null)
+                    b
+                } else null
+
                 val backgroundChoice by deps.widgetPreferencesStore()
                     .observeBackgroundFor(appWidgetId)
-                    .collectAsState(initial = WidgetBackgroundChoice.Dark)
-
-                val detail = playlist?.let { PlaylistDetail(playlist = it, tracks = tracks) }
+                    .collectAsState(initial = initialBackground)
 
                 WidgetContent(
                     appWidgetId = appWidgetId,
@@ -103,6 +159,7 @@ class GenesisWidget : GlanceAppWidget() {
                     detail = detail,
                     state = state,
                     mode = mode,
+                    bookmark = bookmark,
                     backgroundChoice = backgroundChoice,
                     artLoader = deps.widgetArtLoader(),
                 )
@@ -110,23 +167,30 @@ class GenesisWidget : GlanceAppWidget() {
         }
     }
 
+    private fun audiobookTracksFlow(deps: WidgetEntryPoint): Flow<List<Track>> =
+        combine(
+            deps.userPreferencesStore().observeLibrarySort(),
+            deps.userPreferencesStore().observeAudiobookOverrides(),
+        ) { sort, overrides -> sort to overrides }
+            .let { paired ->
+                flow {
+                    paired.collect { (sort, overrides) ->
+                        emit(deps.mediaLibraryRepository().getAudiobookTracks(sort, overrides.toList()))
+                    }
+                }.flowOn(Dispatchers.IO)
+            }
+            // MediaStore queries can throw SecurityException if the user revokes READ_MEDIA_AUDIO
+            // mid-flight via Settings → Permissions. Without a catch the throw propagates into
+            // the Glance composable, which freezes the widget on its loading layout until reboot.
+            .catch { emit(emptyList()) }
+
+    private fun audiobookPseudoPlaylist(title: String): Playlist =
+        Playlist(id = AUDIOBOOK_PSEUDO_PLAYLIST_ID, name = title, createdAt = 0L)
+
     companion object {
         // Vertical size is locked to 1 cell via widget_info.xml; only width varies.
         val SIZE_DEFAULT = DpSize(240.dp, 100.dp)
     }
-}
-
-@Composable
-private fun <T> observePerPlaylist(
-    playlistId: Long?,
-    default: T,
-    source: (Long) -> Flow<T>,
-): T {
-    val flow = remember(playlistId) {
-        if (playlistId == null) flowOf(default) else source(playlistId)
-    }
-    val value by flow.collectAsState(initial = default)
-    return value
 }
 
 @Composable
@@ -136,15 +200,30 @@ private fun WidgetContent(
     detail: PlaylistDetail?,
     state: PlaybackState,
     mode: LoopState,
+    bookmark: BookmarkStore.Bookmark?,
     backgroundChoice: WidgetBackgroundChoice,
     artLoader: WidgetArtLoader,
 ) {
     val context = LocalContext.current
     val renderMode = widgetRenderMode(widgetPlaylistId, detail, state)
+    // mode comes straight from PlaylistModeStore — the single source of truth. Don't fall back
+    // to state.repeatMode/shuffleEnabled: that snapshot can lag (e.g., service was killed and
+    // user changed mode via another widget) and would force every widget to render the stale
+    // session value. PlayerService observes the same store, so the live player stays in sync.
+    val effectiveMode = mode
     val params = actionParametersOf(APP_WIDGET_ID_KEY to appWidgetId)
     val openAppAction = actionStartActivity(
+        // FLAG_ACTIVITY_NEW_TASK is required when starting an activity from a non-activity
+        // context (Glance PendingIntents are dispatched from system context). Without it,
+        // some launchers — most notably MIUI from the lockscreen widget — throw
+        // ActivityNotFoundException / silently no-op. SINGLE_TOP|CLEAR_TOP are kept so
+        // re-tapping while the app is already on top doesn't push a new instance.
         Intent(context, MainActivity::class.java)
-            .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            .addFlags(
+                Intent.FLAG_ACTIVITY_NEW_TASK or
+                    Intent.FLAG_ACTIVITY_SINGLE_TOP or
+                    Intent.FLAG_ACTIVITY_CLEAR_TOP
+            )
             .apply {
                 if (widgetPlaylistId != null) {
                     putExtra(MainActivity.EXTRA_PLAYLIST_ID, widgetPlaylistId)
@@ -168,28 +247,42 @@ private fun WidgetContent(
             detail = detail!!,
             tapAction = openAppAction,
         )
-        WidgetRenderMode.FOREIGN -> {
-            val firstTrack = detail!!.tracks.first()
-            val art = rememberAlbumArt(firstTrack.albumId, artLoader)
+        WidgetRenderMode.OWN_IDLE -> {
+            // This widget's playlist isn't on the player (or the current track was removed
+            // from it). Render the bookmarked track — last position the user listened from
+            // *this* playlist — with full transport. Tapping play/prev/next loads this
+            // playlist on the player, replacing whatever queue was active. That's the whole
+            // point: a second widget starting playback no longer blanks out the first.
+            val displayIndex = detail!!.tracks
+                .indexOfFirst { it.mediaStoreId == bookmark?.mediaStoreId }
+                .let { if (it >= 0) it else 0 }
+            val displayTrack = detail.tracks[displayIndex]
+            val transport = transportEnabled(
+                mode = effectiveMode,
+                currentIndex = displayIndex,
+                lastIndex = detail.tracks.lastIndex,
+            )
+            val art = rememberAlbumArt(displayTrack.albumId, artLoader)
             BoundCard(
                 choice = backgroundChoice,
                 art = art,
-                title = detail.playlist.name,
-                subtitle = context.getString(R.string.widget_foreign_subtitle),
+                title = displayTrack.title,
+                subtitle = detail.playlist.name,
                 isPlaying = false,
-                mode = mode,
-                transport = TransportEnabled.DISABLED,
+                mode = effectiveMode,
+                transport = transport,
                 params = params,
                 openAppAction = openAppAction,
             )
         }
         WidgetRenderMode.OWN_PLAYING, WidgetRenderMode.OWN_PAUSED -> {
+            // currentIndex is guaranteed >= 0 here: widgetRenderMode returns OWN_IDLE if the
+            // current track isn't in detail.tracks, so we never reach this branch with a missing track.
             val currentIndex = detail!!.tracks
                 .indexOfFirst { it.mediaStoreId == state.currentMediaStoreId }
-                .let { if (it < 0) 0 else it }
             val currentTrack = detail.tracks[currentIndex]
             val transport = transportEnabled(
-                mode = mode,
+                mode = effectiveMode,
                 currentIndex = currentIndex,
                 lastIndex = detail.tracks.lastIndex,
             )
@@ -200,7 +293,7 @@ private fun WidgetContent(
                 title = currentTrack.title,
                 subtitle = detail.playlist.name,
                 isPlaying = state.isPlaying,
-                mode = mode,
+                mode = effectiveMode,
                 transport = transport,
                 params = params,
                 openAppAction = openAppAction,
@@ -412,6 +505,9 @@ private fun BoundButtonRow(
             .wrapContentHeight(),
         verticalAlignment = Alignment.CenterVertically,
     ) {
+        // prev/next stay visible but turn muted (mutedColor via tintInactive) when transport
+        // says they're useless — at queue edges in OFF mode, etc. Action is null in those
+        // cases so the IconBtn renders without a clickable.
         IconBtn(
             iconRes = R.drawable.ic_widget_prev,
             cdRes = R.string.previous,
@@ -444,8 +540,8 @@ private fun BoundButtonRow(
             cdRes = loopStateContentDescription(mode),
             action = actionRunCallback<CycleLoopAction>(params),
             sizeDp = buttonSizeDp,
-            tintActive = if (mode == LoopState.OFF) mutedColor else onColor,
-            tintInactive = mutedColor,
+            tintActive = onColor,
+            tintInactive = onColor,
         )
     }
 }

@@ -56,23 +56,25 @@ class WidgetRenderModeTest {
     }
 
     @Test
-    fun foreignWhenDifferentPlaylistPlaying() {
+    fun ownIdleWhenDifferentPlaylistPlaying() {
+        // A different playlist is the active queue — this widget falls back to its own state
+        // (bookmark-driven) instead of greying out.
         val mode = widgetRenderMode(
             widgetPlaylistId = 1L,
             detail = detail(1L, 3),
-            state = PlaybackState(playlistId = 2L, isPlaying = true),
+            state = PlaybackState(playlistId = 2L, isPlaying = true, currentMediaStoreId = 1L),
         )
-        assertEquals(WidgetRenderMode.FOREIGN, mode)
+        assertEquals(WidgetRenderMode.OWN_IDLE, mode)
     }
 
     @Test
-    fun foreignWhenNothingPlaying() {
+    fun ownIdleWhenNothingPlaying() {
         val mode = widgetRenderMode(
             widgetPlaylistId = 1L,
             detail = detail(1L, 3),
             state = PlaybackState(playlistId = null),
         )
-        assertEquals(WidgetRenderMode.FOREIGN, mode)
+        assertEquals(WidgetRenderMode.OWN_IDLE, mode)
     }
 
     @Test
@@ -80,7 +82,7 @@ class WidgetRenderModeTest {
         val mode = widgetRenderMode(
             widgetPlaylistId = 1L,
             detail = detail(1L, 3),
-            state = PlaybackState(playlistId = 1L, isPlaying = true),
+            state = PlaybackState(playlistId = 1L, isPlaying = true, currentMediaStoreId = 1L),
         )
         assertEquals(WidgetRenderMode.OWN_PLAYING, mode)
     }
@@ -90,8 +92,29 @@ class WidgetRenderModeTest {
         val mode = widgetRenderMode(
             widgetPlaylistId = 1L,
             detail = detail(1L, 3),
-            state = PlaybackState(playlistId = 1L, isPlaying = false),
+            state = PlaybackState(playlistId = 1L, isPlaying = false, currentMediaStoreId = 2L),
         )
         assertEquals(WidgetRenderMode.OWN_PAUSED, mode)
+    }
+
+    @Test
+    fun ownIdleWhenOwnPlaylistButCurrentTrackNotInList() {
+        val mode = widgetRenderMode(
+            widgetPlaylistId = 1L,
+            detail = detail(1L, 3), // tracks 1, 2, 3
+            state = PlaybackState(playlistId = 1L, isPlaying = true, currentMediaStoreId = 999L),
+        )
+        // Track 999 was deleted/removed from this playlist — fall back to bookmark-driven render.
+        assertEquals(WidgetRenderMode.OWN_IDLE, mode)
+    }
+
+    @Test
+    fun ownIdleWhenOwnPlaylistButCurrentMediaIdIsNull() {
+        val mode = widgetRenderMode(
+            widgetPlaylistId = 1L,
+            detail = detail(1L, 3),
+            state = PlaybackState(playlistId = 1L, isPlaying = false, currentMediaStoreId = null),
+        )
+        assertEquals(WidgetRenderMode.OWN_IDLE, mode)
     }
 }
