@@ -2,14 +2,17 @@ package dev.maxxximgb.genesis.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
@@ -23,28 +26,60 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import dev.maxxximgb.genesis.R
+import dev.maxxximgb.genesis.domain.model.LoopState
 import dev.maxxximgb.genesis.domain.model.PlaybackState
+import dev.maxxximgb.genesis.domain.model.loopStateOf
 import dev.maxxximgb.genesis.ui.theme.Elevation
 import dev.maxxximgb.genesis.ui.theme.Sizes
 import dev.maxxximgb.genesis.ui.theme.Spacing
 
+private const val DISMISS_THRESHOLD_DP = 48
+
 @Composable
 fun NowPlayingBar(
     state: PlaybackState,
+    albumId: Long?,
     modifier: Modifier = Modifier,
     onTogglePlayPause: () -> Unit,
     onPrevious: () -> Unit,
     onNext: () -> Unit,
     onTap: () -> Unit = {},
+    onDismiss: () -> Unit = {},
 ) {
+    val density = LocalDensity.current
+    val dismissThresholdPx = with(density) { DISMISS_THRESHOLD_DP.dp.toPx() }
     Surface(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .navigationBarsPadding()
+            .padding(horizontal = Spacing.sm, vertical = Spacing.xs)
+            .pointerInput(Unit) {
+                // Track only downward drag — upward should not dismiss. We accumulate the
+                // total drop and trigger on release if it crossed the threshold, so a
+                // brief touch wobble doesn't accidentally hide the bar.
+                var accumulated = 0f
+                detectVerticalDragGestures(
+                    onDragStart = { accumulated = 0f },
+                    onDragCancel = { accumulated = 0f },
+                    onDragEnd = {
+                        if (accumulated >= dismissThresholdPx) onDismiss()
+                        accumulated = 0f
+                    },
+                ) { _, dragAmount ->
+                    if (dragAmount > 0f) accumulated += dragAmount
+                }
+            },
         tonalElevation = Elevation.high,
-        color = MaterialTheme.colorScheme.surfaceContainer,
+        // surfaceContainerHigh is stepped above surfaceVariant so the floating bar
+        // doesn't blend with the library background in dark mode.
+        color = MaterialTheme.colorScheme.surfaceContainerHigh,
+        shape = RoundedCornerShape(16.dp),
     ) {
         Box {
             Row(
@@ -56,9 +91,13 @@ fun NowPlayingBar(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 AlbumArtImage(
-                    albumId = null, // 1.5: derived from currentMediaStoreId in 2.3 fullscreen
+                    albumId = albumId,
                     contentDescription = null,
                     size = Sizes.albumArtMedium,
+                    // Smaller placeholder than the library rows — the mini bar's tile is bigger
+                    // (medium vs small) so 0.5 looked clunky here. 0.32 keeps the surface mostly
+                    // empty so the bar reads quiet when no art is available.
+                    placeholderFraction = 0.32f,
                 )
                 Column(
                     modifier = Modifier
@@ -80,7 +119,17 @@ fun NowPlayingBar(
                         overflow = TextOverflow.Ellipsis,
                     )
                 }
-                IconButton(onClick = onPrevious, enabled = state.queue.size > 1) {
+                // Order: [prev] [play/pause] [next]. prev/next stay visible but go disabled
+                // (Material's automatic muted tint via `enabled = false`) when the queue has
+                // nowhere to navigate — single-track queue, or edges in a non-repeating queue.
+                // In repeat-all / repeat-one / shuffle modes navigation always works, so both
+                // sides stay enabled.
+                val mode = loopStateOf(state.repeatMode, state.shuffleEnabled)
+                val canSkip = state.queue.size > 1
+                val canPrev = canSkip && (mode != LoopState.OFF || state.currentIndex > 0)
+                val canNext = canSkip && (mode != LoopState.OFF ||
+                    state.currentIndex < state.queue.lastIndex)
+                IconButton(onClick = onPrevious, enabled = canPrev) {
                     Icon(
                         Icons.Filled.SkipPrevious,
                         contentDescription = stringResource(R.string.previous),
@@ -96,7 +145,7 @@ fun NowPlayingBar(
                         modifier = Modifier.size(28.dp),
                     )
                 }
-                IconButton(onClick = onNext, enabled = state.queue.size > 1) {
+                IconButton(onClick = onNext, enabled = canNext) {
                     Icon(
                         Icons.Filled.SkipNext,
                         contentDescription = stringResource(R.string.next),

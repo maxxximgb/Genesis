@@ -9,6 +9,7 @@ sealed interface PlaylistDetailUiState {
         val detail: PlaylistDetail,
         val selectedIds: Set<Long> = emptySet(),
         val currentMediaStoreId: Long? = null,
+        val reorderMode: Boolean = false,
     ) : PlaylistDetailUiState {
         val selectionMode: Boolean get() = selectedIds.isNotEmpty()
     }

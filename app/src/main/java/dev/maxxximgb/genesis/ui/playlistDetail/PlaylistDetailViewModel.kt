@@ -5,12 +5,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.maxxximgb.genesis.data.playback.PlaybackStateStore
+import dev.maxxximgb.genesis.data.preferences.UserPreferencesStore
 import dev.maxxximgb.genesis.domain.model.Track
 import dev.maxxximgb.genesis.domain.usecase.playback.PlayPlaylistUseCase
 import dev.maxxximgb.genesis.domain.usecase.playlist.AddTracksToPlaylistUseCase
 import dev.maxxximgb.genesis.domain.usecase.playlist.ObservePlaylistDetailUseCase
 import dev.maxxximgb.genesis.domain.usecase.playlist.RemoveTracksFromPlaylistUseCase
 import dev.maxxximgb.genesis.domain.usecase.playlist.ReorderPlaylistTracksUseCase
+import dev.maxxximgb.genesis.ui.library.SelectionStateHolder
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -31,6 +33,8 @@ class PlaylistDetailViewModel @Inject constructor(
     private val removeTracksUseCase: RemoveTracksFromPlaylistUseCase,
     private val reorderTracksUseCase: ReorderPlaylistTracksUseCase,
     private val playPlaylistUseCase: PlayPlaylistUseCase,
+    private val userPreferences: UserPreferencesStore,
+    private val selectionStateHolder: SelectionStateHolder,
 ) : ViewModel() {
 
     val playlistId: Long = checkNotNull(savedStateHandle["playlistId"]) {
@@ -38,6 +42,7 @@ class PlaylistDetailViewModel @Inject constructor(
     }
 
     private val selectedIds = MutableStateFlow<Set<Long>>(emptySet())
+    private val reorderMode = MutableStateFlow(false)
 
     private val detailFlow = observePlaylistDetail(playlistId)
     private val currentMediaStoreIdFlow =
@@ -47,13 +52,15 @@ class PlaylistDetailViewModel @Inject constructor(
         detailFlow,
         selectedIds,
         currentMediaStoreIdFlow,
-    ) { detail, selected, currentId ->
+        reorderMode,
+    ) { detail, selected, currentId, reorder ->
         when {
             detail == null -> PlaylistDetailUiState.NotFound
             else -> PlaylistDetailUiState.Content(
                 detail = detail,
                 selectedIds = selected,
                 currentMediaStoreId = currentId,
+                reorderMode = reorder && selected.isEmpty(),
             )
         }
     }.stateIn(
@@ -62,14 +69,30 @@ class PlaylistDetailViewModel @Inject constructor(
         initialValue = PlaylistDetailUiState.Loading,
     )
 
+    fun setReorderMode(enabled: Boolean) {
+        reorderMode.value = enabled
+        if (enabled) clearSelection()
+    }
+
     fun toggleSelection(mediaStoreId: Long) {
         selectedIds.update { current ->
             if (mediaStoreId in current) current - mediaStoreId else current + mediaStoreId
         }
+        // Mini Now Playing bar reads SelectionStateHolder to slide itself away while the
+        // user is selecting tracks anywhere in the app — same global signal the library uses.
+        selectionStateHolder.set(selectedIds.value.isNotEmpty())
     }
 
     fun clearSelection() {
         selectedIds.value = emptySet()
+        selectionStateHolder.set(false)
+    }
+
+    override fun onCleared() {
+        // Leaving the screen by back-press while a selection was active would otherwise
+        // strand the holder in `active=true` and keep the mini bar permanently hidden.
+        selectionStateHolder.set(false)
+        super.onCleared()
     }
 
     fun addTracks(tracks: List<Track>) {
@@ -92,6 +115,23 @@ class PlaylistDetailViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Drag-handle reorder: take the track at [fromIndex] and insert it at [toIndex].
+     * Different shape than [moveSelected] (which is ±1 nudge for the multi-select toolbar):
+     * here we already know the absolute destination from the drop position.
+     */
+    fun moveTrack(fromIndex: Int, toIndex: Int) {
+        val state = uiState.value as? PlaylistDetailUiState.Content ?: return
+        val tracks = state.detail.tracks
+        if (fromIndex !in tracks.indices || toIndex !in tracks.indices) return
+        if (fromIndex == toIndex) return
+        val newOrder = tracks.map { it.mediaStoreId }.toMutableList().apply {
+            val item = removeAt(fromIndex)
+            add(toIndex, item)
+        }
+        viewModelScope.launch { reorderTracksUseCase(playlistId, newOrder) }
+    }
+
     fun moveSelected(direction: Int) {
         val state = uiState.value as? PlaylistDetailUiState.Content ?: return
         val tracks = state.detail.tracks
@@ -105,8 +145,26 @@ class PlaylistDetailViewModel @Inject constructor(
         viewModelScope.launch { reorderTracksUseCase(playlistId, newOrder) }
     }
 
-    fun play(startIndex: Int = 0) {
-        viewModelScope.launch { playPlaylistUseCase(playlistId, startIndex) }
+    /**
+     * Explicit row tap from PlaylistDetail — pass the index as `explicitStartIndex` so the
+     * use case starts from the chosen track, not from the saved bookmark.
+     */
+    fun play(startIndex: Int) {
+        viewModelScope.launch { playPlaylistUseCase(playlistId, explicitStartIndex = startIndex) }
+    }
+
+    /** Mark every track of this playlist as an audiobook (idempotent override). */
+    suspend fun markAllAsAudiobook(): Int {
+        val state = uiState.value as? PlaylistDetailUiState.Content ?: return 0
+        val ids = state.detail.tracks.map { it.mediaStoreId }
+        if (ids.isEmpty()) return 0
+        userPreferences.addAudiobookOverrides(ids)
+        return ids.size
+    }
+
+    /** "Resume" entry-point — let the use case consult the bookmark. */
+    fun resume() {
+        viewModelScope.launch { playPlaylistUseCase(playlistId) }
     }
 
     private companion object {

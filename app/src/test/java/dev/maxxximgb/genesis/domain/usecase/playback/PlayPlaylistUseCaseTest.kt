@@ -1,5 +1,6 @@
 package dev.maxxximgb.genesis.domain.usecase.playback
 
+import dev.maxxximgb.genesis.data.preferences.BookmarkStore
 import dev.maxxximgb.genesis.data.preferences.PlaylistModeStore
 import dev.maxxximgb.genesis.domain.model.LoopState
 import dev.maxxximgb.genesis.domain.model.PlaybackState
@@ -43,11 +44,11 @@ class PlayPlaylistUseCaseTest {
         val modeStore = mock<PlaylistModeStore> {
             onBlocking { getMode(42L) } doReturn LoopState.OFF
         }
-        val useCase = PlayPlaylistUseCase(repo, controller, modeStore)
+        val useCase = PlayPlaylistUseCase(repo, controller, modeStore, mock<BookmarkStore>())
 
-        useCase(playlistId = 42L, startIndex = 1)
+        useCase(playlistId = 42L, explicitStartIndex = 1)
 
-        verify(controller).playQueue(eq(42L), eq(tracks), eq(1))
+        verify(controller).playQueue(eq(42L), eq(tracks), eq(1), eq(0L))
     }
 
     @Test
@@ -60,13 +61,13 @@ class PlayPlaylistUseCaseTest {
         val modeStore = mock<PlaylistModeStore> {
             onBlocking { getMode(7L) } doReturn LoopState.REPEAT_ONE
         }
-        val useCase = PlayPlaylistUseCase(repo, controller, modeStore)
+        val useCase = PlayPlaylistUseCase(repo, controller, modeStore, mock<BookmarkStore>())
 
         useCase(playlistId = 7L)
 
         verify(controller).setShuffleEnabled(false)
         verify(controller).setRepeatMode(RepeatMode.ONE)
-        verify(controller).playQueue(eq(7L), eq(tracks), eq(0))
+        verify(controller).playQueue(eq(7L), eq(tracks), eq(0), eq(0L))
     }
 
     @Test
@@ -79,7 +80,7 @@ class PlayPlaylistUseCaseTest {
         val modeStore = mock<PlaylistModeStore> {
             onBlocking { getMode(8L) } doReturn LoopState.SHUFFLE
         }
-        val useCase = PlayPlaylistUseCase(repo, controller, modeStore)
+        val useCase = PlayPlaylistUseCase(repo, controller, modeStore, mock<BookmarkStore>())
 
         useCase(playlistId = 8L)
 
@@ -94,9 +95,9 @@ class PlayPlaylistUseCaseTest {
         }
         val controller = mock<PlaybackController>()
         val modeStore = mock<PlaylistModeStore>()
-        val useCase = PlayPlaylistUseCase(repo, controller, modeStore)
+        val useCase = PlayPlaylistUseCase(repo, controller, modeStore, mock<BookmarkStore>())
 
-        useCase(playlistId = 99L, startIndex = 0)
+        useCase(playlistId = 99L, explicitStartIndex = 0)
 
         verifyNoInteractions(controller)
     }

@@ -28,11 +28,22 @@ class MediaControllerProvider @Inject constructor(
 
     private suspend fun connect(): MediaController {
         val token = SessionToken(context, ComponentName(context, PlayerService::class.java))
+        // Listener.onDisconnected fires when the bound MediaSession dies (service stopped or
+        // crashed). Without this hook, [cached] would keep returning a corpse: isConnected can
+        // briefly stay true after release, and any controller call then throws IllegalStateException.
+        // Volatile write is enough — we don't need to grab the mutex; concurrent get() readers
+        // either see the old reference (whose isConnected returns false → reconnect) or null
+        // (→ reconnect). Reconnect itself is mutex-serialised.
+        val listener = object : MediaController.Listener {
+            override fun onDisconnected(controller: MediaController) {
+                if (cached === controller) cached = null
+            }
+        }
         return try {
-            MediaController.Builder(context, token).buildAsync().await()
+            MediaController.Builder(context, token).setListener(listener).buildAsync().await()
         } catch (t: Throwable) {
             // one retry on transient bind failures
-            MediaController.Builder(context, token).buildAsync().await()
+            MediaController.Builder(context, token).setListener(listener).buildAsync().await()
         }
     }
 

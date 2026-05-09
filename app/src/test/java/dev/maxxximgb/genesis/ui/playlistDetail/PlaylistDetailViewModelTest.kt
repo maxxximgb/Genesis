@@ -3,6 +3,7 @@ package dev.maxxximgb.genesis.ui.playlistDetail
 import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
 import dev.maxxximgb.genesis.data.playback.PlaybackStateStore
+import dev.maxxximgb.genesis.data.preferences.UserPreferencesStore
 import dev.maxxximgb.genesis.domain.model.PlaybackState
 import dev.maxxximgb.genesis.domain.model.Playlist
 import dev.maxxximgb.genesis.domain.model.PlaylistDetail
@@ -12,6 +13,7 @@ import dev.maxxximgb.genesis.domain.usecase.playlist.AddTracksToPlaylistUseCase
 import dev.maxxximgb.genesis.domain.usecase.playlist.ObservePlaylistDetailUseCase
 import dev.maxxximgb.genesis.domain.usecase.playlist.RemoveTracksFromPlaylistUseCase
 import dev.maxxximgb.genesis.domain.usecase.playlist.ReorderPlaylistTracksUseCase
+import dev.maxxximgb.genesis.ui.library.SelectionStateHolder
 import dev.maxxximgb.genesis.util.MainDispatcherRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -43,6 +45,8 @@ class PlaylistDetailViewModelTest {
         on { flow } doReturn flowOf(PlaybackState())
     }
 
+    private fun userPrefs(): UserPreferencesStore = mock()
+
     @Test
     fun emitsContentWhenDetailNonNull() = runTest {
         val detail = PlaylistDetail(
@@ -59,6 +63,8 @@ class PlaylistDetailViewModelTest {
             mock<RemoveTracksFromPlaylistUseCase>(),
             mock<ReorderPlaylistTracksUseCase>(),
             mock<PlayPlaylistUseCase>(),
+            userPrefs(),
+            SelectionStateHolder(),
         )
 
         vm.uiState.test {
@@ -95,6 +101,8 @@ class PlaylistDetailViewModelTest {
             mock<RemoveTracksFromPlaylistUseCase>(),
             mock<ReorderPlaylistTracksUseCase>(),
             play,
+            userPrefs(),
+            SelectionStateHolder(),
         )
 
         vm.play(startIndex = 3)
@@ -114,6 +122,8 @@ class PlaylistDetailViewModelTest {
             savedStateWithPlaylistId(99L), observe,
             playbackStore(),
             addUc, removeUc, reorderUc, mock<PlayPlaylistUseCase>(),
+            userPrefs(),
+            SelectionStateHolder(),
         )
 
         val tracks = listOf(track(1L))

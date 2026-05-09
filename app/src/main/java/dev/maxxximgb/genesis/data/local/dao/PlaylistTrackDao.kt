@@ -26,6 +26,16 @@ abstract class PlaylistTrackDao {
     @Query("DELETE FROM playlist_tracks WHERE playlistId = :playlistId AND mediaStoreId IN (:mediaStoreIds)")
     abstract suspend fun deleteAll(playlistId: Long, mediaStoreIds: List<Long>)
 
+    /**
+     * Cascade-style purge for when the underlying MediaStore row is gone (e.g.,
+     * user deleted the file via [TrackMutator]). Removes the join rows from
+     * EVERY playlist, otherwise stale entries linger and `observeTracksForPlaylist`
+     * still emits them (the JOIN drops the row only because [TrackEntity] is also
+     * gone, but the join row itself stays as garbage).
+     */
+    @Query("DELETE FROM playlist_tracks WHERE mediaStoreId = :mediaStoreId")
+    abstract suspend fun deleteByMediaStoreId(mediaStoreId: Long)
+
     @Query("DELETE FROM playlist_tracks WHERE playlistId = :playlistId")
     abstract suspend fun deleteByPlaylist(playlistId: Long)
 
